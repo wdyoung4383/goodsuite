@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoodSuite — Agreement Gross Profit Report | Feb 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #3e0074;
+    --purple-light: #5a0099;
+    --purple-mid: #7c3aed;
+    --accent: #c084fc;
+    --accent-dim: #a855f7;
+    --bg: #0f0a1a;
+    --bg-card: #1a1028;
+    --bg-card2: #221535;
+    --border: rgba(192,132,252,0.18);
+    --border-strong: rgba(192,132,252,0.35);
+    --text: #f3f0ff;
+    --text-muted: #a89bc2;
+    --text-dim: #6b5f85;
+    --green: #4ade80;
+    --green-bg: rgba(74,222,128,0.1);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.1);
+    --amber: #fbbf24;
+    --ms-color: #60a5fa;
+    --rs-color: #4ade80;
+    --ls-color: #fb923c;
+    --bdr-color: #a78bfa;
+    --other-color: #f472b6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--purple) 0%, #1a0035 60%, #0f0a1a 100%);
+    border-bottom: 1px solid var(--border-strong);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo { width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0; }
+  .header-text {}
+  .header-title { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; }
+  .header-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.04em; }
+  .header-right { text-align: right; }
+  .client-name { font-family: 'Orbitron', monospace; font-size: 17px; font-weight: 500; color: var(--text); letter-spacing: 0.06em; }
+  .period-badge {
+    display: inline-block; margin-top: 4px;
+    background: rgba(192,132,252,0.12); border: 1px solid var(--border-strong);
+    border-radius: 20px; padding: 3px 12px;
+    font-size: 11px; color: var(--accent); letter-spacing: 0.08em; font-weight: 500;
+  }
+
+  .container { max-width: 1280px; margin: 0 auto; padding: 28px 32px 48px; }
+
+  /* METRICS */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+  .metric-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px;
+    position: relative; overflow: hidden;
+  }
+  .metric-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--purple-mid), var(--accent));
+  }
+  .metric-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .metric-value { font-family: 'Orbitron', monospace; font-size: 22px; font-weight: 500; color: var(--text); }
+  .metric-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 0; border-bottom: 1px solid var(--border); }
+  .tab {
+    padding: 10px 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; cursor: pointer; color: var(--text-muted);
+    border: 1px solid transparent; border-bottom: none;
+    border-radius: 8px 8px 0 0; transition: all 0.15s;
+    font-family: 'Outfit', sans-serif;
+  }
+  .tab:hover:not(.active) { color: var(--accent); background: rgba(192,132,252,0.06); }
+  .tab.active {
+    background: var(--bg-card); border-color: var(--border);
+    color: var(--accent); margin-bottom: -1px;
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-top: none; border-radius: 0 0 12px 12px; overflow: hidden;
+  }
+  .filter-row {
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+    background: var(--bg-card2);
+  }
+  .filter-row label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+  .filter-row select {
+    font-size: 12px; padding: 5px 10px;
+    background: var(--bg-card); color: var(--text);
+    border: 1px solid var(--border-strong); border-radius: 6px;
+    font-family: 'Outfit', sans-serif; cursor: pointer;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left; padding: 10px 14px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim); border-bottom: 1px solid var(--border);
+    background: var(--bg-card2);
+  }
+  thead th.num { text-align: right; }
+  tbody tr.client-row { cursor: pointer; transition: background 0.1s; }
+  tbody tr.client-row:hover td { background: rgba(192,132,252,0.05); }
+  tbody td {
+    padding: 9px 14px; border-bottom: 1px solid rgba(192,132,252,0.08);
+    font-size: 13px; color: var(--text); vertical-align: middle;
+  }
+  tbody td.num { text-align: right; font-variant-numeric: tabular-nums; font-size: 13px; }
+  .chevron {
+    font-size: 9px; color: var(--text-dim); display: inline-block;
+    transition: transform 0.15s; width: 14px; flex-shrink: 0;
+  }
+  .chevron.open { transform: rotate(90deg); color: var(--accent); }
+  td.name-cell { display: flex; align-items: center; gap: 8px; }
+
+  /* DETAIL ROWS */
+  tr.detail-row { display: none; }
+  tr.detail-row.open { display: table-row; }
+  tr.detail-row td {
+    background: rgba(62,0,116,0.18);
+    padding: 7px 14px 7px 38px;
+    font-size: 12px; color: var(--text-muted);
+    border-bottom: 1px solid rgba(192,132,252,0.05);
+  }
+  tr.detail-row td.num { font-size: 12px; text-align: right; }
+  .type-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; margin-right: 6px; }
+
+  /* ATTENTION ROW HIGHLIGHT */
+  tr.neg-highlight td { background: rgba(248,113,113,0.04); }
+
+  /* VALUE COLORS */
+  .pos { color: var(--green); }
+  .neg { color: var(--red); }
+  .warn { color: var(--amber); }
+
+  /* BADGES */
+  .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .badge-neg { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+  .badge-pos { background: var(--green-bg); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+  .badge-warn { background: rgba(251,191,36,0.1); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Orbitron', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-dim);
+    margin-bottom: 14px; margin-top: 24px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* CHARTS */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 0; }
+  .chart-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px;
+  }
+  .chart-card h3 {
+    font-family: 'Orbitron', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-dim);
+    margin-bottom: 16px;
+  }
+  .chart-wrap { position: relative; width: 100%; }
+
+  /* LEGEND */
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+  .leg-sq { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ATTENTION CALLOUT */
+  .callout {
+    border-radius: 10px; padding: 14px 18px; margin-bottom: 20px;
+    border-left: 3px solid var(--red); background: var(--red-bg);
+    font-size: 13px; color: var(--text-muted);
+  }
+  .callout strong { color: var(--red); }
+
+  /* LOGO EMBED */
+  .logo-img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center; font-size: 11px; color: var(--text-dim);
+    padding: 20px 32px; border-top: 1px solid var(--border);
+    letter-spacing: 0.06em;
+  }
+  .footer span { color: var(--accent-dim); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <img class="logo-img" src="https://i.ibb.co/Xkv9S3Lz/67e203b0-3c7d-4c23-a45f-080ec8c77cf8.png" alt="Will & Way Solutions">
+    <div class="header-text">
+      <div class="header-title">Will & Way Solutions</div>
+      <div class="header-sub">Agreement Gross Profit Analysis · Delivered for GoodSuite</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="client-name">GoodSuite</div>
+    <select id="month-select" onchange="switchMonth(this.value)" style="background:rgba(192,132,252,0.15);border:1px solid rgba(192,132,252,0.4);border-radius:20px;padding:5px 28px 5px 14px;font-size:12px;color:#c084fc;font-family:'Outfit',sans-serif;font-weight:600;letter-spacing:0.06em;cursor:pointer;appearance:none;-webkit-appearance:none;outline:none;">
+      <option value="jan">January 2026</option>
+      <option value="feb" selected>February 2026</option>
+      <option value="mar">March 2026</option>
+    </select>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="metrics" id="metrics-row"></div>
+
+  <div class="tabs" id="tabs-row">
+    <div class="tab active" onclick="switchTab('overview')">Overview</div>
+    <div class="tab" onclick="switchTab('clients')">By Client</div>
+    <div class="tab" onclick="switchTab('types')">By Type</div>
+    <div class="tab" onclick="switchTab('attention')">Needs Attention</div>
+    <div class="tab" onclick="switchTab('nolabor')">No Labor</div>
+    <div class="tab" onclick="switchTab('service')">Service Agreements</div>
+    <div class="tab" onclick="switchTab('trending')">Trending</div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div id="tab-overview" class="panel active">
+    <div class="table-wrap" style="border-radius:0 12px 12px 12px; padding:20px;">
+      <div class="legend">
+        <div class="legend-item"><span class="leg-sq" style="background:var(--ms-color)"></span>Managed Services</div>
+        <div class="legend-item"><span class="leg-sq" style="background:var(--rs-color)"></span>Remote Support</div>
+        <div class="legend-item"><span class="leg-sq" style="background:var(--ls-color)"></span>License & Sub</div>
+        <div class="legend-item"><span class="leg-sq" style="background:var(--bdr-color)"></span>BDR</div>
+        <div class="legend-item"><span class="leg-sq" style="background:var(--other-color)"></span>Other</div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>Gross Profit by Agreement Type</h3>
+          <div class="chart-wrap" style="height:220px"><canvas id="chart-type-gp"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>GP Margin % by Type</h3>
+          <div class="chart-wrap" style="height:220px"><canvas id="chart-type-margin"></canvas></div>
+        </div>
+      </div>
+      <div class="charts-grid" style="margin-top:20px">
+        <div class="chart-card">
+          <h3>Top 10 Clients by Gross Profit</h3>
+          <div class="chart-wrap" style="height:380px"><canvas id="chart-top10"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Bottom 10 Clients by Gross Profit</h3>
+          <div class="chart-wrap" style="height:380px"><canvas id="chart-bottom10"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BY CLIENT -->
+  <div id="tab-clients" class="panel">
+    <div class="table-wrap" style="border-radius:0 12px 12px 12px">
+      <div class="filter-row">
+        <label>Sort by</label>
+        <select id="client-sort" onchange="renderClientTable()">
+          <option value="gp-desc">GP (high → low)</option>
+          <option value="gp-asc">GP (low → high)</option>
+          <option value="margin-desc">Margin (high → low)</option>
+          <option value="name">Name A → Z</option>
+        </select>
+        <label>Min GP</label>
+        <select id="client-min" onchange="renderClientTable()">
+          <option value="-99999">All clients</option>
+          <option value="0">Positive GP only</option>
+          <option value="500">$500+</option>
+          <option value="1000">$1,000+</option>
+          <option value="5000">$5,000+</option>
+        </select>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:32%">Client</th>
+            <th class="num">Revenue</th>
+            <th class="num">Labor Cost</th>
+            <th class="num">Gross Profit</th>
+            <th class="num">GP Margin</th>
+            <th class="num">Billable Hrs</th>
+          </tr>
+        </thead>
+        <tbody id="client-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- BY TYPE -->
+  <div id="tab-types" class="panel">
+    <div class="table-wrap" style="border-radius:0 12px 12px 12px; padding:20px;">
+      <div class="section-title">By Agreement Type</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:32%">Agreement Type</th>
+            <th class="num">Revenue</th>
+            <th class="num">Labor Cost</th>
+            <th class="num">Gross Profit</th>
+            <th class="num">GP Margin</th>
+            <th class="num">Billable Hrs</th>
+            <th class="num">Clients</th>
+          </tr>
+        </thead>
+        <tbody id="type-tbody"></tbody>
+      </table>
+      <div class="section-title" style="margin-top:28px">Service Agreement Blended (L&amp;S vs Managed/Support/BDR)</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:32%">Bucket</th>
+            <th class="num">Revenue</th>
+            <th class="num">Labor Cost</th>
+            <th class="num">Gross Profit</th>
+            <th class="num">GP Margin</th>
+            <th class="num">Billable Hrs</th>
+            <th class="num">Clients</th>
+          </tr>
+        </thead>
+        <tbody id="type-blended-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- NEEDS ATTENTION -->
+  <div id="tab-attention" class="panel">
+    <div class="table-wrap" style="border-radius:0 12px 12px 12px; padding:20px;">
+      <div class="section-title">Negative GP Agreements</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Client</th><th>Type</th>
+            <th class="num">GP</th><th class="num">Revenue</th>
+            <th class="num">Labor Cost</th><th class="num">Product Cost</th>
+          </tr>
+        </thead>
+        <tbody id="neg-tbody"></tbody>
+      </table>
+      <div class="section-title">Runaway Remote Support (time cost &gt; revenue)</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th class="num">Revenue</th><th class="num">Labor Cost</th>
+            <th class="num">GP</th><th class="num">Hours</th>
+          </tr>
+        </thead>
+        <tbody id="rs-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- NO LABOR -->
+  <div id="tab-nolabor" class="panel">
+    <div class="table-wrap" style="border-radius:0 12px 12px 12px; padding:20px;">
+      <div class="callout">
+        <strong>Note:</strong> These clients had no billable or no-charge labor hours logged against any agreement in February 2026. They may be underserved, or their agreements may be product/license-only.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th class="num">Revenue</th>
+            <th class="num">Gross Profit</th>
+            <th class="num">GP Margin</th>
+            <th class="num">Agreement Types</th>
+          </tr>
+        </thead>
+        <tbody id="nolabor-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- SERVICE AGREEMENTS -->
+  <div id="tab-service" class="panel">
+    <div class="table-wrap" style="border-radius:0 12px 12px 12px">
+      <div class="filter-row">
+        <label>Sort by</label>
+        <select id="svc-sort" onchange="renderServiceTable()">
+          <option value="svc-gp-desc">Service GP (high→low)</option>
+          <option value="svc-gp-asc">Service GP (low→high)</option>
+          <option value="svc-margin-desc">Service Margin (high→low)</option>
+          <option value="ls-gp-desc">L&amp;S GP (high→low)</option>
+          <option value="name">Name A→Z</option>
+        </select>
+        <label>Filter</label>
+        <select id="svc-filter" onchange="renderServiceTable()">
+          <option value="all">All clients</option>
+          <option value="ls-neg">Negative L&amp;S GP</option>
+          <option value="svc-neg">Negative service GP</option>
+        </select>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:24%">Client</th>
+            <th class="num" colspan="4" style="border-left:1px solid rgba(192,132,252,0.2);color:var(--ms-color)">Managed / Support / BDR</th>
+            <th class="num" colspan="4" style="border-left:1px solid rgba(192,132,252,0.2);color:var(--ls-color)">License &amp; Subscription</th>
+          </tr>
+          <tr>
+            <th></th>
+            <th class="num" style="border-left:1px solid rgba(192,132,252,0.12)">Revenue</th>
+            <th class="num">Labor Cost</th>
+            <th class="num">GP</th>
+            <th class="num">Margin</th>
+            <th class="num" style="border-left:1px solid rgba(192,132,252,0.12)">Revenue</th>
+            <th class="num">Labor Cost</th>
+            <th class="num">GP</th>
+            <th class="num">GP%</th>
+          </tr>
+        </thead>
+        <tbody id="service-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TRENDING -->
+  <div id="tab-trending" class="panel">
+    <div class="table-wrap" style="border-radius:0 12px 12px 12px; padding:20px;">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+        <label style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim)">Company</label>
+        <select id="trend-company" onchange="renderTrending()" style="background:var(--bg-card);color:var(--text);border:1px solid var(--border-strong);border-radius:8px;padding:7px 12px;font-size:13px;font-family:'Outfit',sans-serif;min-width:260px;cursor:pointer;">
+        </select>
+        <label style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-left:8px">Metrics</label>
+        <div id="trend-toggles" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+      </div>
+      <div class="charts-grid" style="margin-bottom:20px;">
+        <div class="chart-card">
+          <h3>Gross Profit ($)</h3>
+          <div class="chart-wrap" style="height:200px"><canvas id="trend-gp"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>GP Margin (%)</h3>
+          <div class="chart-wrap" style="height:200px"><canvas id="trend-margin"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Revenue ($)</h3>
+          <div class="chart-wrap" style="height:200px"><canvas id="trend-rev"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Labor Cost ($)</h3>
+          <div class="chart-wrap" style="height:200px"><canvas id="trend-tc"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Billable Hours</h3>
+          <div class="chart-wrap" style="height:200px"><canvas id="trend-hrs"></canvas></div>
+        </div>
+        <div class="chart-card" id="trend-detail-card">
+          <h3>Detail by Type</h3>
+          <div id="trend-detail-table"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Prepared by <span>Will & Way Solutions</span> · Automate With Purpose · willandway.solutions
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+
+const DATA = {
+  jan: [{"co":"ALLIANCE FOR WELLNESS","type":"License & Subscription","gp":218.42,"rev":1792.26,"timeCost":0.0,"prodCost":1573.84,"hrs":0.0},{"co":"ALLIANCE FOR WELLNESS","type":"Managed Services","gp":2325.3,"rev":2616.5,"timeCost":291.2,"prodCost":0.0,"hrs":14.25},{"co":"ALLIANCE FOR WELLNESS","type":"Remote Support","gp":511.87,"rev":650.0,"timeCost":138.13,"prodCost":0.0,"hrs":7.0},{"co":"American Vision Windows","type":"BDR","gp":254.16,"rev":666.0,"timeCost":1.84,"prodCost":410.0,"hrs":0.75},{"co":"American Vision Windows of Arizona","type":"License & Subscription","gp":546.25,"rev":1494.0,"timeCost":0.0,"prodCost":947.75,"hrs":0.0},{"co":"American Vision Windows of Arizona","type":"Managed Services","gp":3045.61,"rev":3161.0,"timeCost":50.09,"prodCost":65.3,"hrs":2.75},{"co":"American Vision Windows of Arizona","type":"Remote Support","gp":-31.36,"rev":0.0,"timeCost":31.36,"prodCost":0.0,"hrs":1.0},{"co":"Anacapa Heating & Air Inc.","type":"BDR","gp":115.0,"rev":115.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Anacapa Heating & Air Inc.","type":"License & Subscription","gp":111.01,"rev":411.5,"timeCost":0.0,"prodCost":300.49,"hrs":0.0},{"co":"Anacapa Heating & Air Inc.","type":"Managed Services","gp":644.8,"rev":719.0,"timeCost":59.8,"prodCost":14.4,"hrs":1.75},{"co":"Barnett Tool & Engineering","type":"BDR","gp":162.84,"rev":385.74,"timeCost":0.0,"prodCost":222.9,"hrs":0.0},{"co":"Barnett Tool & Engineering","type":"License & Subscription","gp":396.51,"rev":1520.84,"timeCost":0.0,"prodCost":1124.33,"hrs":0.0},{"co":"Barnett Tool & Engineering","type":"Managed Services","gp":1440.38,"rev":1512.04,"timeCost":71.66,"prodCost":0.0,"hrs":3.25},{"co":"Barnett Tool & Engineering","type":"Remote Support","gp":-40.48,"rev":0.0,"timeCost":40.48,"prodCost":0.0,"hrs":1.5},{"co":"Cepac Tile","type":"License & Subscription","gp":-100.06,"rev":0.0,"timeCost":0.0,"prodCost":100.06,"hrs":0.0},{"co":"Cepac Tile","type":"Managed Services","gp":923.15,"rev":945.0,"timeCost":21.85,"prodCost":0.0,"hrs":1.5},{"co":"Cepac Tile","type":"Remote Support","gp":715.0,"rev":715.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Edgar Rice Burroughs, Inc.","type":"License & Subscription","gp":-28.92,"rev":165.6,"timeCost":0.0,"prodCost":194.52,"hrs":0.0},{"co":"Edgar Rice Burroughs, Inc.","type":"Managed Services","gp":943.0,"rev":950.0,"timeCost":0.0,"prodCost":7.0,"hrs":0.0},{"co":"Edgar Rice Burroughs, Inc.","type":"Remote Support","gp":215.41,"rev":300.0,"timeCost":84.59,"prodCost":0.0,"hrs":3.78},{"co":"Essex Electronics, Inc.","type":"BDR","gp":138.0,"rev":258.0,"timeCost":0.0,"prodCost":120.0,"hrs":0.0},{"co":"Essex Electronics, Inc.","type":"License & Subscription","gp":-44.18,"rev":438.56,"timeCost":0.0,"prodCost":482.74,"hrs":0.0},{"co":"Essex Electronics, Inc.","type":"Managed Services","gp":1631.72,"rev":1649.2,"timeCost":17.48,"prodCost":0.0,"hrs":2.5},{"co":"Essex Electronics, Inc.","type":"Remote Support","gp":856.77,"rev":900.0,"timeCost":43.23,"prodCost":0.0,"hrs":2.5},{"co":"Exactly Right Media","type":"License & Subscription","gp":169.31,"rev":1602.01,"timeCost":0.0,"prodCost":1432.7,"hrs":0.0},{"co":"Exactly Right Media","type":"Managed Services","gp":3461.37,"rev":3477.01,"timeCost":15.64,"prodCost":0.0,"hrs":1.5},{"co":"Exactly Right Media","type":"Remote Support","gp":988.4,"rev":1200.0,"timeCost":211.6,"prodCost":0.0,"hrs":8.5},{"co":"Fishman Geller & Stepanian, LLP","type":"BDR","gp":267.0,"rev":447.0,"timeCost":0.0,"prodCost":180.0,"hrs":0.0},{"co":"Fishman Geller & Stepanian, LLP","type":"License & Subscription","gp":16.93,"rev":804.75,"timeCost":0.0,"prodCost":787.82,"hrs":0.0},{"co":"Fishman Geller & Stepanian, LLP","type":"Managed Services","gp":1829.76,"rev":2052.0,"timeCost":222.24,"prodCost":0.0,"hrs":9.75},{"co":"Fishman Geller & Stepanian, LLP","type":"Remote Support","gp":-410.35,"rev":1050.0,"timeCost":1460.35,"prodCost":0.0,"hrs":43.5},{"co":"FZ TAX SERVICES","type":"BDR","gp":116.22,"rev":215.22,"timeCost":0.0,"prodCost":99.0,"hrs":0.5},{"co":"FZ TAX SERVICES","type":"License & Subscription","gp":-22.12,"rev":36.5,"timeCost":0.0,"prodCost":58.62,"hrs":0.0},{"co":"FZ TAX SERVICES","type":"Managed Services","gp":10.95,"rev":27.28,"timeCost":16.33,"prodCost":0.0,"hrs":1.0},{"co":"FZ TAX SERVICES","type":"Remote Support","gp":149.1,"rev":350.0,"timeCost":200.9,"prodCost":0.0,"hrs":5.25},{"co":"Gaytan & Pineda Insurance LLC DBA/ Fiesta Insuranc","type":"License & Subscription","gp":-281.5,"rev":942.5,"timeCost":0.0,"prodCost":1224.0,"hrs":0.0},{"co":"GLOBAL CARE MEDICAL GROUP","type":"License & Subscription","gp":-4.8,"rev":0.0,"timeCost":0.0,"prodCost":4.8,"hrs":0.0},{"co":"GLOBAL CARE MEDICAL GROUP","type":"Managed Services","gp":200.0,"rev":200.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"GLOBAL CARE MEDICAL GROUP","type":"Remote Support","gp":100.0,"rev":100.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Grobstein Teeple, LLP","type":"BDR","gp":158.0,"rev":158.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Grobstein Teeple, LLP","type":"License & Subscription","gp":-270.0,"rev":564.0,"timeCost":0.0,"prodCost":834.0,"hrs":0.0},{"co":"Grobstein Teeple, LLP","type":"License & Subscription","gp":368.37,"rev":2249.93,"timeCost":0.0,"prodCost":1881.56,"hrs":0.0},{"co":"Grobstein Teeple, LLP","type":"Managed Services","gp":2204.15,"rev":2725.0,"timeCost":520.85,"prodCost":0.0,"hrs":16.0},{"co":"Hanover Builders","type":"BDR","gp":99.98,"rev":219.98,"timeCost":0.0,"prodCost":120.0,"hrs":0.0},{"co":"Hanover Builders","type":"License & Subscription","gp":926.22,"rev":3691.74,"timeCost":0.0,"prodCost":2765.52,"hrs":0.0},{"co":"Hanover Builders","type":"Managed Services","gp":1492.76,"rev":2957.0,"timeCost":1464.24,"prodCost":0.0,"hrs":21.75},{"co":"Hanover Builders","type":"Remote Support","gp":-520.87,"rev":0.0,"timeCost":520.87,"prodCost":0.0,"hrs":18.85},{"co":"Harbortown Point INC.","type":"BDR","gp":561.14,"rev":979.0,"timeCost":18.86,"prodCost":399.0,"hrs":1.25},{"co":"Harbortown Point INC.","type":"License & Subscription","gp":-80.79,"rev":60.69,"timeCost":0.0,"prodCost":141.48,"hrs":0.0},{"co":"Harbortown Point INC.","type":"Managed Services","gp":1080.3,"rev":1094.12,"timeCost":13.82,"prodCost":0.0,"hrs":0.5},{"co":"Harbortown Point INC.","type":"Remote Support","gp":307.29,"rev":500.0,"timeCost":192.71,"prodCost":0.0,"hrs":9.5},{"co":"HealthBegins","type":"License & Subscription","gp":-153.45,"rev":29.25,"timeCost":0.0,"prodCost":182.7,"hrs":0.0},{"co":"HealthBegins","type":"Managed Services","gp":692.0,"rev":692.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"HealthBegins","type":"Remote Support","gp":1100.0,"rev":1100.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Hunter Best Cleaning","type":"License & Subscription","gp":-40.3,"rev":162.6,"timeCost":0.0,"prodCost":202.9,"hrs":0.0},{"co":"Hunter Best Cleaning","type":"Managed Services","gp":1115.26,"rev":1124.0,"timeCost":8.74,"prodCost":0.0,"hrs":0.5},{"co":"Hunter Best Cleaning","type":"Remote Support","gp":406.8,"rev":450.0,"timeCost":0.0,"prodCost":43.2,"hrs":0.0},{"co":"Impact Sciences Inc. - Los Angeles","type":"License & Subscription","gp":505.54,"rev":1115.91,"timeCost":0.0,"prodCost":610.37,"hrs":0.0},{"co":"Impact Sciences Inc. - Los Angeles","type":"Managed Services","gp":1296.06,"rev":1373.0,"timeCost":76.94,"prodCost":0.0,"hrs":3.0},{"co":"Ironwood Management","type":"License & Subscription","gp":33.54,"rev":406.6,"timeCost":0.0,"prodCost":373.06,"hrs":0.0},{"co":"Ironwood Management","type":"Managed Services","gp":987.0,"rev":987.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Ironwood Management","type":"Remote Support","gp":563.88,"rev":700.0,"timeCost":136.12,"prodCost":0.0,"hrs":5.8},{"co":"James Investment Partners","type":"License & Subscription","gp":85.42,"rev":426.6,"timeCost":0.0,"prodCost":341.18,"hrs":0.0},{"co":"James Investment Partners","type":"Managed Services","gp":-71.01,"rev":0.0,"timeCost":43.01,"prodCost":28.0,"hrs":2.25},{"co":"James Investment Partners","type":"Remote Support","gp":327.33,"rev":400.0,"timeCost":72.67,"prodCost":0.0,"hrs":5.5},{"co":"Law Offices of Sauda Johnson","type":"BDR","gp":23.1,"rev":66.0,"timeCost":0.0,"prodCost":42.9,"hrs":0.0},{"co":"Law Offices of Sauda Johnson","type":"License & Subscription","gp":285.35,"rev":762.0,"timeCost":0.0,"prodCost":476.65,"hrs":0.0},{"co":"Law Offices of Sauda Johnson","type":"Managed Services","gp":1520.6,"rev":1535.0,"timeCost":14.4,"prodCost":0.0,"hrs":0.5},{"co":"Law Offices of Sauda Johnson","type":"Remote Support","gp":-11.84,"rev":0.0,"timeCost":11.84,"prodCost":0.0,"hrs":0.5},{"co":"Linger, Peterson & Shrum","type":"BDR","gp":71.38,"rev":219.98,"timeCost":0.0,"prodCost":148.6,"hrs":0.0},{"co":"Linger, Peterson & Shrum","type":"License & Subscription","gp":38.42,"rev":738.26,"timeCost":0.0,"prodCost":699.84,"hrs":0.0},{"co":"Linger, Peterson & Shrum","type":"Managed Services","gp":954.6,"rev":1130.0,"timeCost":175.4,"prodCost":0.0,"hrs":8.0},{"co":"Linger, Peterson & Shrum","type":"Remote Support","gp":-357.87,"rev":630.0,"timeCost":987.87,"prodCost":0.0,"hrs":17.5},{"co":"OMNI AGENT SOLUTIONS","type":"BDR","gp":1586.29,"rev":4160.0,"timeCost":59.51,"prodCost":2514.2,"hrs":3.5},{"co":"OMNI AGENT SOLUTIONS","type":"License & Subscription","gp":-226.0,"rev":1716.0,"timeCost":0.0,"prodCost":1942.0,"hrs":0.0},{"co":"OMNI AGENT SOLUTIONS","type":"Managed Services","gp":5043.77,"rev":10339.0,"timeCost":1693.23,"prodCost":3602.0,"hrs":59.25},{"co":"OMNI AGENT SOLUTIONS","type":"Remote Support","gp":4445.6,"rev":5250.0,"timeCost":804.4,"prodCost":0.0,"hrs":27.5},{"co":"Operation Gratitude","type":"BDR","gp":174.0,"rev":499.0,"timeCost":0.0,"prodCost":325.0,"hrs":0.0},{"co":"Operation Gratitude","type":"License & Subscription","gp":-275.02,"rev":110.49,"timeCost":0.0,"prodCost":385.51,"hrs":0.0},{"co":"Operation Gratitude","type":"Managed Services","gp":2582.06,"rev":2646.0,"timeCost":63.94,"prodCost":0.0,"hrs":4.0},{"co":"Operation Gratitude","type":"Remote Support","gp":2080.66,"rev":2150.0,"timeCost":69.34,"prodCost":0.0,"hrs":4.5},{"co":"Owen & Associates","type":"BDR","gp":-9.44,"rev":96.0,"timeCost":6.44,"prodCost":99.0,"hrs":0.5},{"co":"Owen & Associates","type":"License & Subscription","gp":-28.6,"rev":201.7,"timeCost":0.0,"prodCost":230.3,"hrs":0.0},{"co":"Owen & Associates","type":"Managed Services","gp":244.96,"rev":260.0,"timeCost":15.04,"prodCost":0.0,"hrs":1.25},{"co":"Owen & Associates","type":"Remote Support","gp":-133.43,"rev":500.0,"timeCost":633.43,"prodCost":0.0,"hrs":21.75},{"co":"Pacific Capital","type":"License & Subscription","gp":317.43,"rev":1456.0,"timeCost":0.0,"prodCost":1138.57,"hrs":0.0},{"co":"Pacific Capital","type":"License & Subscription","gp":11.52,"rev":72.0,"timeCost":0.0,"prodCost":60.48,"hrs":0.0},{"co":"Pacific Capital","type":"Managed Services","gp":1724.79,"rev":1754.0,"timeCost":29.21,"prodCost":0.0,"hrs":1.75},{"co":"Pacific Capital","type":"Remote Support","gp":-120.56,"rev":0.0,"timeCost":120.56,"prodCost":0.0,"hrs":6.25},{"co":"Pipe It Right Plumbing","type":"License & Subscription","gp":-11.31,"rev":165.9,"timeCost":0.0,"prodCost":177.21,"hrs":0.0},{"co":"Pipe It Right Plumbing","type":"Managed Services","gp":950.0,"rev":950.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Pipe It Right Plumbing","type":"Remote Support","gp":244.25,"rev":250.0,"timeCost":5.75,"prodCost":0.0,"hrs":0.25},{"co":"RA Centers - Primero Mgmt., Inc.","type":"License & Subscription","gp":16.5,"rev":33.0,"timeCost":0.0,"prodCost":16.5,"hrs":0.0},{"co":"RA Centers - Primero Mgmt., Inc.","type":"License & Subscription","gp":33.92,"rev":212.0,"timeCost":0.0,"prodCost":178.08,"hrs":0.0},{"co":"RA Centers - Primero Mgmt., Inc.","type":"Remote Support","gp":600.0,"rev":600.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Raintree Partners","type":"BDR","gp":149.44,"rev":517.0,"timeCost":0.0,"prodCost":367.56,"hrs":0.0},{"co":"Raintree Partners","type":"License & Subscription","gp":751.29,"rev":3340.08,"timeCost":0.0,"prodCost":2588.79,"hrs":0.0},{"co":"Raintree Partners","type":"License & Subscription","gp":218.08,"rev":1532.65,"timeCost":0.0,"prodCost":1314.57,"hrs":0.0},{"co":"Raintree Partners","type":"Managed Services","gp":3070.06,"rev":3411.0,"timeCost":331.34,"prodCost":9.6,"hrs":13.25},{"co":"Raintree Partners","type":"Remote Support","gp":-764.71,"rev":0.0,"timeCost":764.71,"prodCost":0.0,"hrs":23.75},{"co":"S&J Supply Co., Inc.","type":"License & Subscription","gp":842.05,"rev":2403.15,"timeCost":0.0,"prodCost":1561.1,"hrs":0.0},{"co":"S&J Supply Co., Inc.","type":"License & Subscription","gp":800.53,"rev":2267.07,"timeCost":0.0,"prodCost":1466.54,"hrs":0.0},{"co":"S&J Supply Co., Inc.","type":"Managed Services","gp":3588.02,"rev":3637.7,"timeCost":49.68,"prodCost":0.0,"hrs":4.5},{"co":"S&J Supply Co., Inc.","type":"Remote Support","gp":713.36,"rev":1092.0,"timeCost":378.64,"prodCost":0.0,"hrs":11.25},{"co":"San Joaquin Door & Supply","type":"BDR","gp":-54.34,"rev":350.0,"timeCost":0.0,"prodCost":404.34,"hrs":0.0},{"co":"San Joaquin Door & Supply","type":"Remote Support","gp":400.12,"rev":782.0,"timeCost":221.08,"prodCost":160.8,"hrs":13.75},{"co":"San Joaquin Door & Supply","type":"Managed Services","gp":328.18,"rev":524.25,"timeCost":25.95,"prodCost":170.12,"hrs":2.25},{"co":"San Joaquin Door & Supply","type":"License & Subscription","gp":-32.96,"rev":285.8,"timeCost":0.0,"prodCost":318.76,"hrs":0.0},{"co":"Savage Machining","type":"BDR","gp":187.52,"rev":308.0,"timeCost":0.0,"prodCost":120.48,"hrs":0.0},{"co":"Savage Machining","type":"License & Subscription","gp":363.62,"rev":939.7,"timeCost":0.0,"prodCost":576.08,"hrs":0.0},{"co":"Savage Machining","type":"Managed Services","gp":909.55,"rev":954.0,"timeCost":44.45,"prodCost":0.0,"hrs":2.0},{"co":"Savage Machining","type":"Remote Support","gp":509.77,"rev":600.0,"timeCost":90.23,"prodCost":0.0,"hrs":3.0},{"co":"Schifrin, Gagnon & Dickey","type":"Remote Support","gp":-169.41,"rev":0.0,"timeCost":169.41,"prodCost":0.0,"hrs":9.5},{"co":"Schifrin, Gagnon & Dickey","type":"License & Subscription","gp":693.69,"rev":3969.27,"timeCost":0.0,"prodCost":3275.58,"hrs":0.0},{"co":"Schifrin, Gagnon & Dickey","type":"Managed Services","gp":5047.88,"rev":5421.55,"timeCost":373.67,"prodCost":0.0,"hrs":16.75},{"co":"Schifrin, Gagnon & Dickey","type":"Remote Support","gp":258.93,"rev":5085.0,"timeCost":1667.72,"prodCost":3158.35,"hrs":45.5},{"co":"Spondylitis Association of America","type":"License & Subscription","gp":890.5,"rev":1428.0,"timeCost":0.0,"prodCost":537.5,"hrs":0.0},{"co":"Spondylitis Association of America","type":"License & Subscription","gp":1.54,"rev":9.6,"timeCost":0.0,"prodCost":8.06,"hrs":0.0},{"co":"Spondylitis Association of America","type":"Managed Services","gp":571.79,"rev":750.0,"timeCost":178.21,"prodCost":0.0,"hrs":7.75},{"co":"Spondylitis Association of America","type":"Remote Support","gp":-205.27,"rev":0.0,"timeCost":205.27,"prodCost":0.0,"hrs":5.75},{"co":"Spring Industries","type":"BDR","gp":107.94,"rev":642.0,"timeCost":5.06,"prodCost":529.0,"hrs":0.25},{"co":"Spring Industries","type":"License & Subscription","gp":-166.25,"rev":71.05,"timeCost":0.0,"prodCost":237.3,"hrs":0.0},{"co":"Spring Industries","type":"Managed Services","gp":1760.08,"rev":1796.0,"timeCost":35.92,"prodCost":0.0,"hrs":1.75},{"co":"Spring Industries","type":"Remote Support","gp":950.0,"rev":950.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Standard Aero Parts, Inc.","type":"BDR","gp":-8.5,"rev":149.5,"timeCost":0.0,"prodCost":158.0,"hrs":0.0},{"co":"Standard Aero Parts, Inc.","type":"License & Subscription","gp":-73.9,"rev":10.0,"timeCost":0.0,"prodCost":83.9,"hrs":0.0},{"co":"Standard Aero Parts, Inc.","type":"Managed Services","gp":733.49,"rev":1239.52,"timeCost":24.96,"prodCost":481.07,"hrs":2.0},{"co":"Standard Aero Parts, Inc.","type":"Remote Support","gp":406.21,"rev":550.0,"timeCost":143.79,"prodCost":0.0,"hrs":14.5},{"co":"THE LEICHTER FIRM, A PROFESSIONAL CORPORATION","type":"BDR","gp":2.25,"rev":12.0,"timeCost":0.0,"prodCost":9.75,"hrs":0.0},{"co":"THE LEICHTER FIRM, A PROFESSIONAL CORPORATION","type":"License & Subscription","gp":7.24,"rev":164.33,"timeCost":0.0,"prodCost":157.09,"hrs":0.0},{"co":"THE LEICHTER FIRM, A PROFESSIONAL CORPORATION","type":"Managed Services","gp":827.2,"rev":839.0,"timeCost":11.8,"prodCost":0.0,"hrs":0.5},{"co":"THE LEICHTER FIRM, A PROFESSIONAL CORPORATION","type":"Remote Support","gp":234.22,"rev":250.0,"timeCost":15.78,"prodCost":0.0,"hrs":0.75},{"co":"THE WILLOW GROUP DBA STRUCTURE HOME","type":"BDR","gp":-159.0,"rev":180.0,"timeCost":0.0,"prodCost":339.0,"hrs":0.0},{"co":"THE WILLOW GROUP DBA STRUCTURE HOME","type":"License & Subscription","gp":332.42,"rev":1215.29,"timeCost":0.0,"prodCost":882.87,"hrs":0.0},{"co":"THE WILLOW GROUP DBA STRUCTURE HOME","type":"Managed Services","gp":1395.44,"rev":1412.0,"timeCost":16.56,"prodCost":0.0,"hrs":0.5},{"co":"THE WILLOW GROUP DBA STRUCTURE HOME","type":"Remote Support","gp":-330.54,"rev":0.0,"timeCost":330.54,"prodCost":0.0,"hrs":18.75},{"co":"Tur-Bo Jet Products Inc.","type":"BDR","gp":1210.0,"rev":1889.0,"timeCost":0.0,"prodCost":679.0,"hrs":0.0},{"co":"Tur-Bo Jet Products Inc.","type":"License & Subscription","gp":1567.62,"rev":9319.13,"timeCost":0.0,"prodCost":7751.51,"hrs":0.0},{"co":"Tur-Bo Jet Products Inc.","type":"Managed Services","gp":8238.92,"rev":9146.0,"timeCost":907.08,"prodCost":0.0,"hrs":22.75},{"co":"Tur-Bo Jet Products Inc.","type":"Managed Services","gp":758.24,"rev":2424.24,"timeCost":0.0,"prodCost":1666.0,"hrs":0.0},{"co":"Tur-Bo Jet Products Inc.","type":"Remote Support","gp":-2689.38,"rev":0.0,"timeCost":2689.38,"prodCost":0.0,"hrs":57.75},{"co":"Verdugo Hills Medical Group","type":"License & Subscription","gp":-704.87,"rev":269.4,"timeCost":0.0,"prodCost":974.27,"hrs":0.0},{"co":"Verdugo Hills Medical Group","type":"Managed Services","gp":1154.5,"rev":1154.5,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Verdugo Hills Medical Group","type":"Remote Support","gp":800.0,"rev":800.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Wavemaker 360","type":"License & Subscription","gp":152.05,"rev":290.0,"timeCost":0.0,"prodCost":137.95,"hrs":0.0},{"co":"Wavemaker 360","type":"License & Subscription","gp":54.49,"rev":340.2,"timeCost":0.0,"prodCost":285.71,"hrs":0.0},{"co":"Wavemaker 360","type":"Managed Services","gp":1308.8,"rev":1318.0,"timeCost":9.2,"prodCost":0.0,"hrs":0.75},{"co":"Wavemaker 360","type":"Remote Support","gp":419.84,"rev":490.0,"timeCost":70.16,"prodCost":0.0,"hrs":3.25},{"co":"Zankou Enterprises, Inc.","type":"License & Subscription","gp":1030.9,"rev":2625.0,"timeCost":0.0,"prodCost":1594.1,"hrs":0.0},{"co":"Zankou Enterprises, Inc.","type":"Managed Services","gp":369.07,"rev":390.0,"timeCost":20.93,"prodCost":0.0,"hrs":1.25}],
+  feb: [
+  {co:"Alliance for Wellness",type:"License & Subscription",gp:224.72,rev:1792.26,timeCost:0,prodCost:1567.54,hrs:0},
+  {co:"Alliance for Wellness",type:"Managed Services",gp:2456.83,rev:2616.50,timeCost:159.67,prodCost:0,hrs:10},
+  {co:"Alliance for Wellness",type:"Remote Support",gp:451.31,rev:650.00,timeCost:198.69,prodCost:0,hrs:7.25},
+  {co:"American Vision Windows",type:"BDR",gp:256.00,rev:666.00,timeCost:0,prodCost:410,hrs:0},
+  {co:"American Vision Windows of Arizona",type:"License & Subscription",gp:550.75,rev:1503.00,timeCost:0,prodCost:952.25,hrs:0},
+  {co:"American Vision Windows of Arizona",type:"Managed Services",gp:3072.24,rev:3161.00,timeCost:23.46,prodCost:65.30,hrs:2},
+  {co:"Anacapa Heating & Air",type:"BDR",gp:91.64,rev:115.00,timeCost:23.36,prodCost:0,hrs:0.75},
+  {co:"Anacapa Heating & Air",type:"License & Subscription",gp:111.01,rev:411.50,timeCost:0,prodCost:300.49,hrs:0},
+  {co:"Anacapa Heating & Air",type:"Managed Services",gp:666.45,rev:719.00,timeCost:38.15,prodCost:14.40,hrs:2.75},
+  {co:"Anacapa Heating & Air",type:"Remote Support",gp:-33.35,rev:0,timeCost:33.35,prodCost:0,hrs:1.5},
+  {co:"Barnett Tool & Engineering",type:"BDR",gp:162.84,rev:385.74,timeCost:0,prodCost:222.90,hrs:0},
+  {co:"Barnett Tool & Engineering",type:"License & Subscription",gp:396.51,rev:1520.84,timeCost:0,prodCost:1124.33,hrs:0},
+  {co:"Barnett Tool & Engineering",type:"Managed Services",gp:1357.68,rev:1512.04,timeCost:154.36,prodCost:0,hrs:6.25},
+  {co:"Barnett Tool & Engineering",type:"Remote Support",gp:-17.25,rev:0,timeCost:17.25,prodCost:0,hrs:2},
+  {co:"Cepac Tile",type:"License & Subscription",gp:-97.06,rev:0,timeCost:0,prodCost:97.06,hrs:0},
+  {co:"Cepac Tile",type:"Managed Services",gp:881.24,rev:945.00,timeCost:63.76,prodCost:0,hrs:2.5},
+  {co:"Cepac Tile",type:"Remote Support",gp:694.02,rev:715.00,timeCost:20.98,prodCost:0,hrs:0.5},
+  {co:"Edgar Rice Burroughs",type:"License & Subscription",gp:-28.92,rev:165.60,timeCost:0,prodCost:194.52,hrs:0},
+  {co:"Edgar Rice Burroughs",type:"Managed Services",gp:930.20,rev:950.00,timeCost:12.80,prodCost:7.00,hrs:0.5},
+  {co:"Edgar Rice Burroughs",type:"Remote Support",gp:283.36,rev:300.00,timeCost:16.64,prodCost:0,hrs:0.75},
+  {co:"Essex Electronics",type:"BDR",gp:138.00,rev:258.00,timeCost:0,prodCost:120,hrs:0},
+  {co:"Essex Electronics",type:"License & Subscription",gp:-44.18,rev:438.56,timeCost:0,prodCost:482.74,hrs:0},
+  {co:"Essex Electronics",type:"Managed Services",gp:1599.94,rev:1716.20,timeCost:116.26,prodCost:0,hrs:5.75},
+  {co:"Essex Electronics",type:"Remote Support",gp:788.12,rev:900.00,timeCost:111.88,prodCost:0,hrs:4.25},
+  {co:"Exactly Right Media",type:"License & Subscription",gp:164.51,rev:1602.01,timeCost:0,prodCost:1437.50,hrs:0},
+  {co:"Exactly Right Media",type:"Managed Services",gp:3335.75,rev:3341.50,timeCost:5.75,prodCost:0,hrs:0.25},
+  {co:"Exactly Right Media",type:"Remote Support",gp:1172.27,rev:1200.00,timeCost:27.73,prodCost:0,hrs:1.75},
+  {co:"Fishman Geller & Stepanian",type:"BDR",gp:267.00,rev:447.00,timeCost:0,prodCost:180,hrs:0},
+  {co:"Fishman Geller & Stepanian",type:"License & Subscription",gp:17.97,rev:841.26,timeCost:0,prodCost:823.29,hrs:0},
+  {co:"Fishman Geller & Stepanian",type:"Managed Services",gp:2039.58,rev:2334.02,timeCost:294.44,prodCost:0,hrs:6.25},
+  {co:"Fishman Geller & Stepanian",type:"Remote Support",gp:-396.22,rev:1050.00,timeCost:1446.22,prodCost:0,hrs:56.92},
+  {co:"FZ Tax Services",type:"BDR",gp:107.48,rev:215.22,timeCost:8.74,prodCost:99,hrs:0.75},
+  {co:"FZ Tax Services",type:"License & Subscription",gp:-22.12,rev:36.50,timeCost:0,prodCost:58.62,hrs:0},
+  {co:"FZ Tax Services",type:"Managed Services",gp:15.55,rev:27.28,timeCost:11.73,prodCost:0,hrs:1},
+  {co:"FZ Tax Services",type:"Remote Support",gp:350.00,rev:350.00,timeCost:0,prodCost:0,hrs:0},
+  {co:"Gaytan & Pineda Insurance",type:"License & Subscription",gp:-281.50,rev:942.50,timeCost:0,prodCost:1224,hrs:0},
+  {co:"Global Care Medical Group",type:"License & Subscription",gp:-4.80,rev:0,timeCost:0,prodCost:4.80,hrs:0},
+  {co:"Global Care Medical Group",type:"Managed Services",gp:200.00,rev:200.00,timeCost:0,prodCost:0,hrs:0},
+  {co:"Global Care Medical Group",type:"Remote Support",gp:100.00,rev:100.00,timeCost:0,prodCost:0,hrs:0},
+  {co:"Grobstein Teeple",type:"BDR",gp:79.00,rev:79.00,timeCost:0,prodCost:0,hrs:0},
+  {co:"Grobstein Teeple",type:"License & Subscription",gp:270.26,rev:3082.68,timeCost:0,prodCost:2812.42,hrs:0},
+  {co:"Grobstein Teeple",type:"Managed Services",gp:1239.38,rev:1400.00,timeCost:160.62,prodCost:0,hrs:8},
+  {co:"Hanover Builders",type:"BDR",gp:93.77,rev:219.98,timeCost:6.21,prodCost:120,hrs:0.5},
+  {co:"Hanover Builders",type:"License & Subscription",gp:1493.49,rev:4861.71,timeCost:0,prodCost:3368.22,hrs:0},
+  {co:"Hanover Builders",type:"Managed Services",gp:2765.79,rev:3179.92,timeCost:414.13,prodCost:0,hrs:14},
+  {co:"Hanover Builders",type:"Remote Support",gp:-1067.10,rev:0,timeCost:1067.10,prodCost:0,hrs:43.25},
+  {co:"Harbortown Point",type:"BDR",gp:544.25,rev:979.00,timeCost:35.75,prodCost:399,hrs:1.75},
+  {co:"Harbortown Point",type:"License & Subscription",gp:-79.79,rev:60.69,timeCost:0,prodCost:140.48,hrs:0},
+  {co:"Harbortown Point",type:"Managed Services",gp:1070.53,rev:1094.12,timeCost:23.59,prodCost:0,hrs:1.25},
+  {co:"Harbortown Point",type:"Remote Support",gp:334.18,rev:500.00,timeCost:165.82,prodCost:0,hrs:10.5},
+  {co:"HealthBegins",type:"License & Subscription",gp:-152.15,rev:29.25,timeCost:0,prodCost:181.40,hrs:0},
+  {co:"HealthBegins",type:"Managed Services",gp:692.00,rev:692.00,timeCost:0,prodCost:0,hrs:0},
+  {co:"HealthBegins",type:"Remote Support",gp:1100.00,rev:1100.00,timeCost:0,prodCost:0,hrs:0},
+  {co:"Housing Corp of America",type:"License & Subscription",gp:-45.97,rev:366.74,timeCost:0,prodCost:412.71,hrs:0},
+  {co:"Housing Corp of America",type:"Remote Support",gp:1266.13,rev:1350.00,timeCost:83.87,prodCost:0,hrs:4},
+  {co:"Hunter Best Cleaning",type:"License & Subscription",gp:-41.80,rev:159.60,timeCost:0,prodCost:201.40,hrs:0},
+  {co:"Hunter Best Cleaning",type:"Managed Services",gp:1104.45,rev:1124.00,timeCost:19.55,prodCost:0,hrs:1},
+  {co:"Hunter Best Cleaning",type:"Remote Support",gp:406.80,rev:450.00,timeCost:0,prodCost:43.20,hrs:0},
+  {co:"Impact Sciences",type:"License & Subscription",gp:509.09,rev:1160.82,timeCost:0,prodCost:651.73,hrs:0},
+  {co:"Impact Sciences",type:"Managed Services",gp:1370.02,rev:1373.00,timeCost:2.98,prodCost:0,hrs:2.25},
+  {co:"Impact Sciences",type:"Remote Support",gp:-57.62,rev:0,timeCost:57.62,prodCost:0,hrs:2.25},
+  {co:"Ironwood Management",type:"License & Subscription",gp:38.34,rev:406.60,timeCost:0,prodCost:368.26,hrs:0},
+  {co:"Ironwood Management",type:"Managed Services",gp:961.34,rev:987.00,timeCost:25.66,prodCost:0,hrs:1.75},
+  {co:"Ironwood Management",type:"Remote Support",gp:546.00,rev:700.00,timeCost:154.00,prodCost:0,hrs:5.25},
+  {co:"James Investment Partners",type:"License & Subscription",gp:80.62,rev:426.60,timeCost:0,prodCost:345.98,hrs:0},
+  {co:"James Investment Partners",type:"Managed Services",gp:-39.50,rev:0,timeCost:11.50,prodCost:28,hrs:1.5},
+  {co:"James Investment Partners",type:"Remote Support",gp:368.14,rev:400.00,timeCost:31.86,prodCost:0,hrs:2},
+  {co:"Law Offices of Sauda Johnson",type:"BDR",gp:23.10,rev:66.00,timeCost:0,prodCost:42.90,hrs:0},
+  {co:"Law Offices of Sauda Johnson",type:"License & Subscription",gp:285.35,rev:762.00,timeCost:0,prodCost:476.65,hrs:0},
+  {co:"Law Offices of Sauda Johnson",type:"Managed Services",gp:1516.76,rev:1535.00,timeCost:18.24,prodCost:0,hrs:1},
+  {co:"Law Offices of Sauda Johnson",type:"Remote Support",gp:-19.20,rev:0,timeCost:19.20,prodCost:0,hrs:0.5},
+  {co:"Linger Peterson & Shrum",type:"BDR",gp:71.38,rev:219.98,timeCost:0,prodCost:148.60,hrs:0},
+  {co:"Linger Peterson & Shrum",type:"License & Subscription",gp:36.92,rev:735.26,timeCost:0,prodCost:698.34,hrs:0},
+  {co:"Linger Peterson & Shrum",type:"Managed Services",gp:910.76,rev:1130.00,timeCost:219.24,prodCost:0,hrs:11.5},
+  {co:"Linger Peterson & Shrum",type:"Remote Support",gp:-619.46,rev:630.00,timeCost:1249.46,prodCost:0,hrs:38},
+  {co:"OMNI Agent Solutions",type:"BDR",gp:1582.76,rev:4160.00,timeCost:63.04,prodCost:2514.20,hrs:3.25},
+  {co:"OMNI Agent Solutions",type:"License & Subscription",gp:-283.40,rev:1726.00,timeCost:0,prodCost:2009.40,hrs:0},
+  {co:"OMNI Agent Solutions",type:"Managed Services",gp:5160.61,rev:10339.00,timeCost:1576.39,prodCost:3602,hrs:75.75},
+  {co:"OMNI Agent Solutions",type:"Remote Support",gp:3993.37,rev:5900.00,timeCost:1906.63,prodCost:0,hrs:64.25},
+  {co:"Operation Gratitude",type:"BDR",gp:174.00,rev:499.00,timeCost:0,prodCost:325,hrs:0},
+  {co:"Operation Gratitude",type:"License & Subscription",gp:-278.52,rev:110.49,timeCost:0,prodCost:389.01,hrs:0},
+  {co:"Operation Gratitude",type:"Managed Services",gp:2617.71,rev:2646.00,timeCost:28.29,prodCost:0,hrs:2.5},
+  {co:"Operation Gratitude",type:"Remote Support",gp:2005.83,rev:2200.00,timeCost:194.17,prodCost:0,hrs:5.25},
+  {co:"Owen & Associates",type:"BDR",gp:-11.05,rev:96.00,timeCost:8.05,prodCost:99,hrs:0.5},
+  {co:"Owen & Associates",type:"License & Subscription",gp:-20.80,rev:201.70,timeCost:0,prodCost:222.50,hrs:0},
+  {co:"Owen & Associates",type:"Managed Services",gp:225.58,rev:260.00,timeCost:34.42,prodCost:0,hrs:1.5},
+  {co:"Owen & Associates",type:"Remote Support",gp:430.70,rev:500.00,timeCost:69.30,prodCost:0,hrs:2.5},
+  {co:"Pacific Capital",type:"License & Subscription",gp:324.17,rev:1498.08,timeCost:0,prodCost:1173.91,hrs:0},
+  {co:"Pacific Capital",type:"Managed Services",gp:1854.65,rev:1876.04,timeCost:21.39,prodCost:0,hrs:1.75},
+  {co:"Pacific Capital",type:"Remote Support",gp:-727.26,rev:0,timeCost:727.26,prodCost:0,hrs:28.65},
+  {co:"Pipe It Right Plumbing",type:"License & Subscription",gp:-11.31,rev:165.90,timeCost:0,prodCost:177.21,hrs:0},
+  {co:"Pipe It Right Plumbing",type:"Managed Services",gp:950.00,rev:950.00,timeCost:0,prodCost:0,hrs:0},
+  {co:"Pipe It Right Plumbing",type:"Remote Support",gp:250.00,rev:250.00,timeCost:0,prodCost:0,hrs:0},
+  {co:"Raintree Partners",type:"BDR",gp:149.44,rev:517.00,timeCost:0,prodCost:367.56,hrs:0},
+  {co:"Raintree Partners",type:"License & Subscription",gp:969.14,rev:4909.73,timeCost:0,prodCost:3940.59,hrs:0},
+  {co:"Raintree Partners",type:"Managed Services",gp:3225.16,rev:3344.00,timeCost:109.24,prodCost:9.60,hrs:6.25},
+  {co:"Raintree Partners",type:"Remote Support",gp:-409.01,rev:0,timeCost:409.01,prodCost:0,hrs:16.92},
+  {co:"S&J Supply Co.",type:"License & Subscription",gp:1626.58,rev:4664.41,timeCost:0,prodCost:3037.83,hrs:0},
+  {co:"S&J Supply Co.",type:"Managed Services",gp:3650.25,rev:3833.57,timeCost:183.32,prodCost:0,hrs:2.75},
+  {co:"S&J Supply Co.",type:"Remote Support",gp:1007.13,rev:1092.00,timeCost:84.87,prodCost:0,hrs:5.25},
+  {co:"San Joaquin Door & Supply",type:"BDR",gp:-54.34,rev:350.00,timeCost:0,prodCost:404.34,hrs:0},
+  {co:"San Joaquin Door & Supply",type:"Managed Services",gp:381.40,rev:524.25,timeCost:3.70,prodCost:139.15,hrs:0.75},
+  {co:"San Joaquin Door & Supply",type:"Remote Support",gp:427.42,rev:782.00,timeCost:193.78,prodCost:160.80,hrs:6.5},
+  {co:"Savage Machining",type:"BDR",gp:187.52,rev:308.00,timeCost:0,prodCost:120.48,hrs:0},
+  {co:"Savage Machining",type:"License & Subscription",gp:367.10,rev:975.31,timeCost:0,prodCost:608.21,hrs:0},
+  {co:"Savage Machining",type:"Managed Services",gp:937.04,rev:954.00,timeCost:16.96,prodCost:0,hrs:0.75},
+  {co:"Savage Machining",type:"Remote Support",gp:593.79,rev:600.00,timeCost:6.21,prodCost:0,hrs:0.5},
+  {co:"Schifrin Gagnon & Dickey",type:"License & Subscription",gp:690.93,rev:3956.51,timeCost:0,prodCost:3265.58,hrs:0},
+  {co:"Schifrin Gagnon & Dickey",type:"Managed Services",gp:5162.97,rev:5419.33,timeCost:256.36,prodCost:0,hrs:19},
+  {co:"Schifrin Gagnon & Dickey",type:"Remote Support",gp:638.69,rev:5130.00,timeCost:1332.96,prodCost:3158.35,hrs:63.49},
+  {co:"Spondylitis Assoc of America",type:"License & Subscription",gp:894.10,rev:1450.46,timeCost:0,prodCost:556.36,hrs:0},
+  {co:"Spondylitis Assoc of America",type:"Managed Services",gp:730.60,rev:792.86,timeCost:62.26,prodCost:0,hrs:4.25},
+  {co:"Spondylitis Assoc of America",type:"Remote Support",gp:-34.69,rev:0,timeCost:34.69,prodCost:0,hrs:2.25},
+  {co:"Spring Industries",type:"BDR",gp:113.00,rev:642.00,timeCost:0,prodCost:529,hrs:0},
+  {co:"Spring Industries",type:"License & Subscription",gp:-166.25,rev:71.05,timeCost:0,prodCost:237.30,hrs:0},
+  {co:"Spring Industries",type:"Managed Services",gp:1776.91,rev:1796.00,timeCost:19.09,prodCost:0,hrs:1.5},
+  {co:"Spring Industries",type:"Remote Support",gp:871.60,rev:950.00,timeCost:78.40,prodCost:0,hrs:2.75},
+  {co:"Standard Aero Parts",type:"BDR",gp:-8.50,rev:149.50,timeCost:0,prodCost:158,hrs:0},
+  {co:"Standard Aero Parts",type:"License & Subscription",gp:-73.90,rev:10.00,timeCost:0,prodCost:83.90,hrs:0},
+  {co:"Standard Aero Parts",type:"Managed Services",gp:756.84,rev:1239.52,timeCost:1.61,prodCost:481.07,hrs:0.25},
+  {co:"Standard Aero Parts",type:"Remote Support",gp:525.91,rev:550.00,timeCost:24.09,prodCost:0,hrs:12.75},
+  {co:"The Leichter Firm",type:"BDR",gp:2.25,rev:12.00,timeCost:0,prodCost:9.75,hrs:0},
+  {co:"The Leichter Firm",type:"License & Subscription",gp:7.24,rev:164.33,timeCost:0,prodCost:157.09,hrs:0},
+  {co:"The Leichter Firm",type:"Managed Services",gp:831.64,rev:839.00,timeCost:7.36,prodCost:0,hrs:0.5},
+  {co:"The Leichter Firm",type:"Remote Support",gp:211.07,rev:250.00,timeCost:38.93,prodCost:0,hrs:2.25},
+  {co:"The Willow Group",type:"BDR",gp:-159.00,rev:180.00,timeCost:0,prodCost:339,hrs:0},
+  {co:"The Willow Group",type:"License & Subscription",gp:335.42,rev:1221.29,timeCost:0,prodCost:885.87,hrs:0},
+  {co:"The Willow Group",type:"Managed Services",gp:1380.96,rev:1412.00,timeCost:31.04,prodCost:0,hrs:1.25},
+  {co:"The Willow Group",type:"Remote Support",gp:-281.42,rev:0,timeCost:281.42,prodCost:0,hrs:16.8},
+  {co:"Tur-Bo Jet Products",type:"BDR",gp:1191.21,rev:1889.00,timeCost:18.79,prodCost:679,hrs:2.5},
+  {co:"Tur-Bo Jet Products",type:"Managed Services",gp:-177.45,rev:2424.24,timeCost:935.69,prodCost:1666,hrs:22.75},
+  {co:"Tur-Bo Jet Products",type:"Remote Support",gp:-1080.13,rev:0,timeCost:1080.13,prodCost:0,hrs:23.25},
+  {co:"Verdugo Hills Medical",type:"License & Subscription",gp:-704.57,rev:271.29,timeCost:0,prodCost:975.86,hrs:0},
+  {co:"Verdugo Hills Medical",type:"Managed Services",gp:1154.50,rev:1154.50,timeCost:0,prodCost:0,hrs:0},
+  {co:"Verdugo Hills Medical",type:"Remote Support",gp:800.00,rev:800.00,timeCost:0,prodCost:0,hrs:0},
+  {co:"Wavemaker 360",type:"License & Subscription",gp:205.29,rev:627.70,timeCost:0,prodCost:422.41,hrs:0},
+  {co:"Wavemaker 360",type:"Managed Services",gp:1287.86,rev:1318.00,timeCost:30.14,prodCost:0,hrs:2.75},
+  {co:"Wavemaker 360",type:"Remote Support",gp:390.05,rev:490.00,timeCost:99.95,prodCost:0,hrs:4.25},
+  {co:"Zankou Enterprises",type:"License & Subscription",gp:1033.10,rev:2625.00,timeCost:0,prodCost:1591.90,hrs:0},
+  {co:"Zankou Enterprises",type:"Managed Services",gp:251.94,rev:390.00,timeCost:138.06,prodCost:0,hrs:5.5},
+],
+  mar: [{"co":"ALLIANCE FOR WELLNESS","type":"License & Subscription","gp":214.92,"rev":1782.26,"timeCost":0.0,"prodCost":1567.34,"hrs":0.0},{"co":"ALLIANCE FOR WELLNESS","type":"Managed Services","gp":2539.58,"rev":2616.5,"timeCost":76.92,"prodCost":0.0,"hrs":4.5},{"co":"ALLIANCE FOR WELLNESS","type":"Remote Support","gp":213.8,"rev":650.0,"timeCost":436.2,"prodCost":0.0,"hrs":29.5},{"co":"American Vision Windows","type":"BDR","gp":256.0,"rev":666.0,"timeCost":0.0,"prodCost":410.0,"hrs":0.0},{"co":"American Vision Windows of Arizona","type":"License & Subscription","gp":550.75,"rev":1503.0,"timeCost":0.0,"prodCost":952.25,"hrs":0.0},{"co":"American Vision Windows of Arizona","type":"Managed Services","gp":3022.95,"rev":3161.0,"timeCost":72.75,"prodCost":65.3,"hrs":4.5},{"co":"American Vision Windows of Arizona","type":"Remote Support","gp":-78.28,"rev":0.0,"timeCost":78.28,"prodCost":0.0,"hrs":5.0},{"co":"Anacapa Heating & Air Inc.","type":"BDR","gp":91.84,"rev":115.0,"timeCost":23.16,"prodCost":0.0,"hrs":0.75},{"co":"Anacapa Heating & Air Inc.","type":"License & Subscription","gp":111.01,"rev":411.5,"timeCost":0.0,"prodCost":300.49,"hrs":0.0},{"co":"Anacapa Heating & Air Inc.","type":"Managed Services","gp":609.93,"rev":719.0,"timeCost":94.67,"prodCost":14.4,"hrs":6.0},{"co":"Anacapa Heating & Air Inc.","type":"Remote Support","gp":-25.76,"rev":0.0,"timeCost":25.76,"prodCost":0.0,"hrs":2.25},{"co":"Barnett Tool & Engineering","type":"BDR","gp":162.84,"rev":385.74,"timeCost":0.0,"prodCost":222.9,"hrs":0.0},{"co":"Barnett Tool & Engineering","type":"License & Subscription","gp":592.55,"rev":2020.84,"timeCost":0.0,"prodCost":1428.29,"hrs":0.0},{"co":"Barnett Tool & Engineering","type":"Managed Services","gp":1323.25,"rev":1512.04,"timeCost":188.79,"prodCost":0.0,"hrs":9.75},{"co":"Barnett Tool & Engineering","type":"Remote Support","gp":-136.74,"rev":0.0,"timeCost":136.74,"prodCost":0.0,"hrs":2.0},{"co":"Cepac Tile","type":"License & Subscription","gp":-97.06,"rev":0.0,"timeCost":0.0,"prodCost":97.06,"hrs":0.0},{"co":"Cepac Tile","type":"Managed Services","gp":945.0,"rev":945.0,"timeCost":0.0,"prodCost":0.0,"hrs":1.5},{"co":"Cepac Tile","type":"Remote Support","gp":670.23,"rev":715.0,"timeCost":44.77,"prodCost":0.0,"hrs":2.0},{"co":"Edgar Rice Burroughs, Inc.","type":"License & Subscription","gp":-28.92,"rev":165.6,"timeCost":0.0,"prodCost":194.52,"hrs":0.0},{"co":"Edgar Rice Burroughs, Inc.","type":"Managed Services","gp":880.36,"rev":950.0,"timeCost":62.64,"prodCost":7.0,"hrs":3.0},{"co":"Edgar Rice Burroughs, Inc.","type":"Remote Support","gp":249.71,"rev":300.0,"timeCost":50.29,"prodCost":0.0,"hrs":2.0},{"co":"Essex Electronics, Inc.","type":"BDR","gp":138.0,"rev":258.0,"timeCost":0.0,"prodCost":120.0,"hrs":0.0},{"co":"Essex Electronics, Inc.","type":"License & Subscription","gp":-49.18,"rev":428.56,"timeCost":0.0,"prodCost":477.74,"hrs":0.0},{"co":"Essex Electronics, Inc.","type":"Managed Services","gp":1621.16,"rev":1716.2,"timeCost":95.04,"prodCost":0.0,"hrs":5.75},{"co":"Essex Electronics, Inc.","type":"Remote Support","gp":864.76,"rev":900.0,"timeCost":35.24,"prodCost":0.0,"hrs":3.5},{"co":"Exactly Right Media","type":"License & Subscription","gp":156.95,"rev":1523.68,"timeCost":0.0,"prodCost":1366.73,"hrs":0.0},{"co":"Exactly Right Media","type":"Managed Services","gp":3277.87,"rev":3341.5,"timeCost":63.63,"prodCost":0.0,"hrs":2.75},{"co":"Exactly Right Media","type":"Remote Support","gp":1119.8,"rev":1200.0,"timeCost":80.2,"prodCost":0.0,"hrs":6.5},{"co":"Fishman Geller & Stepanian, LLP","type":"BDR","gp":267.0,"rev":447.0,"timeCost":0.0,"prodCost":180.0,"hrs":0.0},{"co":"Fishman Geller & Stepanian, LLP","type":"License & Subscription","gp":-1.38,"rev":845.34,"timeCost":0.0,"prodCost":846.72,"hrs":0.0},{"co":"Fishman Geller & Stepanian, LLP","type":"Managed Services","gp":3363.7,"rev":3413.5,"timeCost":49.8,"prodCost":0.0,"hrs":4.25},{"co":"Fishman Geller & Stepanian, LLP","type":"Remote Support","gp":-11.27,"rev":1100.0,"timeCost":1111.27,"prodCost":0.0,"hrs":41.5},{"co":"FZ TAX SERVICES","type":"BDR","gp":116.22,"rev":215.22,"timeCost":0.0,"prodCost":99.0,"hrs":0.0},{"co":"FZ TAX SERVICES","type":"License & Subscription","gp":-22.12,"rev":36.5,"timeCost":0.0,"prodCost":58.62,"hrs":0.0},{"co":"FZ TAX SERVICES","type":"Managed Services","gp":27.28,"rev":27.28,"timeCost":0.0,"prodCost":0.0,"hrs":0.25},{"co":"FZ TAX SERVICES","type":"Remote Support","gp":341.26,"rev":350.0,"timeCost":8.74,"prodCost":0.0,"hrs":0.5},{"co":"Gaytan & Pineda Insurance LLC DBA/ Fiesta Insuranc","type":"License & Subscription","gp":-281.5,"rev":942.5,"timeCost":0.0,"prodCost":1224.0,"hrs":0.0},{"co":"GLOBAL CARE MEDICAL GROUP","type":"License & Subscription","gp":-4.8,"rev":0.0,"timeCost":0.0,"prodCost":4.8,"hrs":0.0},{"co":"GLOBAL CARE MEDICAL GROUP","type":"Managed Services","gp":200.0,"rev":200.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"GLOBAL CARE MEDICAL GROUP","type":"Remote Support","gp":100.0,"rev":100.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Grobstein Teeple, LLP","type":"BDR","gp":79.0,"rev":79.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Grobstein Teeple, LLP","type":"License & Subscription","gp":-142.2,"rev":282.0,"timeCost":0.0,"prodCost":424.2,"hrs":0.0},{"co":"Grobstein Teeple, LLP","type":"License & Subscription","gp":386.82,"rev":2480.14,"timeCost":0.0,"prodCost":2093.32,"hrs":0.0},{"co":"Grobstein Teeple, LLP","type":"Managed Services","gp":1209.18,"rev":1400.0,"timeCost":190.82,"prodCost":0.0,"hrs":9.25},{"co":"Hanover Builders","type":"BDR","gp":99.98,"rev":219.98,"timeCost":0.0,"prodCost":120.0,"hrs":0.0},{"co":"Hanover Builders","type":"License & Subscription","gp":1190.7,"rev":4208.65,"timeCost":0.0,"prodCost":3017.95,"hrs":0.0},{"co":"Hanover Builders","type":"Managed Services","gp":2863.2,"rev":3024.0,"timeCost":160.8,"prodCost":0.0,"hrs":12.0},{"co":"Hanover Builders","type":"Remote Support","gp":-660.77,"rev":0.0,"timeCost":660.77,"prodCost":0.0,"hrs":29.75},{"co":"Harbortown Point INC.","type":"BDR","gp":562.95,"rev":979.0,"timeCost":17.05,"prodCost":399.0,"hrs":1.5},{"co":"Harbortown Point INC.","type":"License & Subscription","gp":-87.29,"rev":45.69,"timeCost":0.0,"prodCost":132.98,"hrs":0.0},{"co":"Harbortown Point INC.","type":"Managed Services","gp":954.63,"rev":1094.12,"timeCost":139.49,"prodCost":0.0,"hrs":4.5},{"co":"Harbortown Point INC.","type":"Remote Support","gp":381.98,"rev":500.0,"timeCost":118.02,"prodCost":0.0,"hrs":4.75},{"co":"HealthBegins","type":"License & Subscription","gp":-152.15,"rev":29.25,"timeCost":0.0,"prodCost":181.4,"hrs":0.0},{"co":"HealthBegins","type":"Managed Services","gp":692.0,"rev":692.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"HealthBegins","type":"Remote Support","gp":1060.0,"rev":1100.0,"timeCost":40.0,"prodCost":0.0,"hrs":1.5},{"co":"Housing Corporation of America","type":"License & Subscription","gp":-39.83,"rev":216.93,"timeCost":0.0,"prodCost":256.76,"hrs":0.0},{"co":"Housing Corporation of America","type":"Remote Support","gp":609.53,"rev":700.0,"timeCost":90.47,"prodCost":0.0,"hrs":7.75},{"co":"Hunter Best Cleaning","type":"License & Subscription","gp":-41.8,"rev":159.6,"timeCost":0.0,"prodCost":201.4,"hrs":0.0},{"co":"Hunter Best Cleaning","type":"Managed Services","gp":1124.0,"rev":1124.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Hunter Best Cleaning","type":"Remote Support","gp":397.14,"rev":450.0,"timeCost":9.66,"prodCost":43.2,"hrs":0.5},{"co":"Impact Sciences Inc. - Los Angeles","type":"License & Subscription","gp":305.78,"rev":1369.29,"timeCost":0.0,"prodCost":1063.51,"hrs":0.0},{"co":"Impact Sciences Inc. - Los Angeles","type":"Managed Services","gp":1334.06,"rev":1373.0,"timeCost":38.94,"prodCost":0.0,"hrs":3.0},{"co":"Impact Sciences Inc. - Los Angeles","type":"Remote Support","gp":-285.08,"rev":0.0,"timeCost":285.08,"prodCost":0.0,"hrs":10.75},{"co":"Ironwood Management","type":"License & Subscription","gp":38.34,"rev":406.6,"timeCost":0.0,"prodCost":368.26,"hrs":0.0},{"co":"Ironwood Management","type":"Managed Services","gp":918.47,"rev":987.0,"timeCost":68.53,"prodCost":0.0,"hrs":5.25},{"co":"Ironwood Management","type":"Remote Support","gp":594.35,"rev":650.0,"timeCost":55.65,"prodCost":0.0,"hrs":2.5},{"co":"James Investment Partners","type":"License & Subscription","gp":56.12,"rev":361.65,"timeCost":0.0,"prodCost":305.53,"hrs":0.0},{"co":"James Investment Partners","type":"Managed Services","gp":-83.93,"rev":0.0,"timeCost":48.93,"prodCost":35.0,"hrs":3.0},{"co":"James Investment Partners","type":"Remote Support","gp":312.09,"rev":450.0,"timeCost":137.91,"prodCost":0.0,"hrs":7.75},{"co":"Law Offices of Sauda Johnson","type":"BDR","gp":23.1,"rev":66.0,"timeCost":0.0,"prodCost":42.9,"hrs":0.0},{"co":"Law Offices of Sauda Johnson","type":"License & Subscription","gp":285.35,"rev":762.0,"timeCost":0.0,"prodCost":476.65,"hrs":0.0},{"co":"Law Offices of Sauda Johnson","type":"Managed Services","gp":1531.55,"rev":1535.0,"timeCost":3.45,"prodCost":0.0,"hrs":0.25},{"co":"Linger, Peterson & Shrum","type":"BDR","gp":71.38,"rev":219.98,"timeCost":0.0,"prodCost":148.6,"hrs":0.0},{"co":"Linger, Peterson & Shrum","type":"License & Subscription","gp":29.32,"rev":760.38,"timeCost":0.0,"prodCost":731.06,"hrs":0.0},{"co":"Linger, Peterson & Shrum","type":"Managed Services","gp":1177.32,"rev":1285.54,"timeCost":108.22,"prodCost":0.0,"hrs":12.25},{"co":"Linger, Peterson & Shrum","type":"Remote Support","gp":61.09,"rev":630.0,"timeCost":568.91,"prodCost":0.0,"hrs":31.25},{"co":"OMNI AGENT SOLUTIONS","type":"BDR","gp":1607.36,"rev":4160.0,"timeCost":38.44,"prodCost":2514.2,"hrs":2.25},{"co":"OMNI AGENT SOLUTIONS","type":"License & Subscription","gp":-341.0,"rev":1726.0,"timeCost":0.0,"prodCost":2067.0,"hrs":0.0},{"co":"OMNI AGENT SOLUTIONS","type":"Managed Services","gp":1162.45,"rev":10535.0,"timeCost":2168.55,"prodCost":7204.0,"hrs":102.0},{"co":"OMNI AGENT SOLUTIONS","type":"Remote Support","gp":3843.0,"rev":6350.0,"timeCost":2507.0,"prodCost":0.0,"hrs":96.75},{"co":"Operation Gratitude","type":"BDR","gp":174.0,"rev":499.0,"timeCost":0.0,"prodCost":325.0,"hrs":0.0},{"co":"Operation Gratitude","type":"License & Subscription","gp":-283.52,"rev":100.49,"timeCost":0.0,"prodCost":384.01,"hrs":0.0},{"co":"Operation Gratitude","type":"Managed Services","gp":2527.58,"rev":2646.0,"timeCost":118.42,"prodCost":0.0,"hrs":5.5},{"co":"Operation Gratitude","type":"Remote Support","gp":2159.78,"rev":2200.0,"timeCost":40.22,"prodCost":0.0,"hrs":1.5},{"co":"Owen & Associates","type":"BDR","gp":-9.34,"rev":96.0,"timeCost":6.34,"prodCost":99.0,"hrs":0.25},{"co":"Owen & Associates","type":"License & Subscription","gp":-20.8,"rev":201.7,"timeCost":0.0,"prodCost":222.5,"hrs":0.0},{"co":"Owen & Associates","type":"Managed Services","gp":260.0,"rev":260.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Owen & Associates","type":"Remote Support","gp":484.64,"rev":500.0,"timeCost":15.36,"prodCost":0.0,"hrs":0.5},{"co":"Pacific Capital","type":"License & Subscription","gp":321.13,"rev":1479.1,"timeCost":0.0,"prodCost":1157.97,"hrs":0.0},{"co":"Pacific Capital","type":"Managed Services","gp":1837.94,"rev":1948.52,"timeCost":110.58,"prodCost":0.0,"hrs":11.75},{"co":"Pacific Capital","type":"Remote Support","gp":-202.11,"rev":0.0,"timeCost":202.11,"prodCost":0.0,"hrs":8.25},{"co":"Pipe It Right Plumbing","type":"License & Subscription","gp":3.25,"rev":256.81,"timeCost":0.0,"prodCost":253.56,"hrs":0.0},{"co":"Pipe It Right Plumbing","type":"Managed Services","gp":937.4,"rev":950.0,"timeCost":12.6,"prodCost":0.0,"hrs":0.5},{"co":"Pipe It Right Plumbing","type":"Remote Support","gp":139.99,"rev":250.0,"timeCost":110.01,"prodCost":0.0,"hrs":5.5},{"co":"Raintree Partners","type":"BDR","gp":149.44,"rev":517.0,"timeCost":0.0,"prodCost":367.56,"hrs":0.0},{"co":"Raintree Partners","type":"License & Subscription","gp":698.99,"rev":3264.42,"timeCost":0.0,"prodCost":2565.43,"hrs":0.0},{"co":"Raintree Partners","type":"License & Subscription","gp":-1613.3,"rev":14638.47,"timeCost":0.0,"prodCost":16251.77,"hrs":0.0},{"co":"Raintree Partners","type":"License & Subscription","gp":213.92,"rev":1505.65,"timeCost":0.0,"prodCost":1291.73,"hrs":0.0},{"co":"Raintree Partners","type":"Managed Services","gp":3072.24,"rev":3443.0,"timeCost":370.76,"prodCost":0.0,"hrs":22.75},{"co":"Raintree Partners","type":"Remote Support","gp":-1245.77,"rev":0.0,"timeCost":1245.77,"prodCost":0.0,"hrs":31.0},{"co":"S&J Supply Co., Inc.","type":"License & Subscription","gp":851.39,"rev":2415.15,"timeCost":0.0,"prodCost":1563.76,"hrs":0.0},{"co":"S&J Supply Co., Inc.","type":"License & Subscription","gp":655.8,"rev":676.0,"timeCost":0.0,"prodCost":20.2,"hrs":0.0},{"co":"S&J Supply Co., Inc.","type":"Managed Services","gp":3689.91,"rev":3713.6,"timeCost":23.69,"prodCost":0.0,"hrs":1.75},{"co":"S&J Supply Co., Inc.","type":"Remote Support","gp":897.12,"rev":1092.0,"timeCost":194.88,"prodCost":0.0,"hrs":5.75},{"co":"San Joaquin Door & Supply","type":"BDR","gp":-54.34,"rev":350.0,"timeCost":0.0,"prodCost":404.34,"hrs":0.0},{"co":"San Joaquin Door & Supply","type":"Remote Support","gp":460.54,"rev":782.0,"timeCost":160.66,"prodCost":160.8,"hrs":8.25},{"co":"San Joaquin Door & Supply","type":"Managed Services","gp":183.88,"rev":475.0,"timeCost":146.78,"prodCost":144.34,"hrs":4.0},{"co":"San Joaquin Door & Supply","type":"License & Subscription","gp":-31.29,"rev":291.0,"timeCost":0.0,"prodCost":322.29,"hrs":0.0},{"co":"Savage Machining","type":"BDR","gp":187.52,"rev":308.0,"timeCost":0.0,"prodCost":120.48,"hrs":0.0},{"co":"Savage Machining","type":"License & Subscription","gp":362.22,"rev":701.95,"timeCost":0.0,"prodCost":339.73,"hrs":0.0},{"co":"Savage Machining","type":"Managed Services","gp":954.0,"rev":954.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.25},{"co":"Savage Machining","type":"Remote Support","gp":600.0,"rev":600.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Schifrin, Gagnon & Dickey","type":"Remote Support","gp":-112.01,"rev":0.0,"timeCost":112.01,"prodCost":0.0,"hrs":6.0},{"co":"Schifrin, Gagnon & Dickey","type":"License & Subscription","gp":696.37,"rev":4029.94,"timeCost":0.0,"prodCost":3333.57,"hrs":0.0},{"co":"Schifrin, Gagnon & Dickey","type":"Managed Services","gp":5300.96,"rev":5508.55,"timeCost":207.59,"prodCost":0.0,"hrs":13.0},{"co":"Schifrin, Gagnon & Dickey","type":"Remote Support","gp":224.0,"rev":5175.0,"timeCost":1736.75,"prodCost":3214.25,"hrs":71.5},{"co":"Spondylitis Association of America","type":"License & Subscription","gp":942.35,"rev":1503.0,"timeCost":0.0,"prodCost":560.65,"hrs":0.0},{"co":"Spondylitis Association of America","type":"License & Subscription","gp":3.97,"rev":24.71,"timeCost":0.0,"prodCost":20.74,"hrs":0.0},{"co":"Spondylitis Association of America","type":"Managed Services","gp":744.41,"rev":775.0,"timeCost":30.59,"prodCost":0.0,"hrs":4.0},{"co":"Spondylitis Association of America","type":"Remote Support","gp":-237.72,"rev":0.0,"timeCost":237.72,"prodCost":0.0,"hrs":16.75},{"co":"Spring Industries","type":"BDR","gp":113.0,"rev":642.0,"timeCost":0.0,"prodCost":529.0,"hrs":1.5},{"co":"Spring Industries","type":"License & Subscription","gp":-178.75,"rev":46.05,"timeCost":0.0,"prodCost":224.8,"hrs":0.0},{"co":"Spring Industries","type":"License & Subscription","gp":580.49,"rev":3628.08,"timeCost":0.0,"prodCost":3047.59,"hrs":0.0},{"co":"Spring Industries","type":"Managed Services","gp":1789.66,"rev":1796.0,"timeCost":6.34,"prodCost":0.0,"hrs":0.25},{"co":"Spring Industries","type":"Remote Support","gp":759.09,"rev":950.0,"timeCost":190.91,"prodCost":0.0,"hrs":12.75},{"co":"Standard Aero Parts, Inc.","type":"BDR","gp":-13.79,"rev":149.5,"timeCost":5.29,"prodCost":158.0,"hrs":0.25},{"co":"Standard Aero Parts, Inc.","type":"License & Subscription","gp":-78.9,"rev":0.0,"timeCost":0.0,"prodCost":78.9,"hrs":0.0},{"co":"Standard Aero Parts, Inc.","type":"Managed Services","gp":739.36,"rev":1239.52,"timeCost":19.09,"prodCost":481.07,"hrs":2.0},{"co":"Standard Aero Parts, Inc.","type":"Remote Support","gp":500.19,"rev":550.0,"timeCost":49.81,"prodCost":0.0,"hrs":2.0},{"co":"THE LEICHTER FIRM, A PROFESSIONAL CORPORATION","type":"BDR","gp":2.25,"rev":12.0,"timeCost":0.0,"prodCost":9.75,"hrs":0.0},{"co":"THE LEICHTER FIRM, A PROFESSIONAL CORPORATION","type":"License & Subscription","gp":7.24,"rev":164.33,"timeCost":0.0,"prodCost":157.09,"hrs":0.0},{"co":"THE LEICHTER FIRM, A PROFESSIONAL CORPORATION","type":"Managed Services","gp":803.8,"rev":839.0,"timeCost":35.2,"prodCost":0.0,"hrs":3.0},{"co":"THE LEICHTER FIRM, A PROFESSIONAL CORPORATION","type":"Remote Support","gp":249.22,"rev":250.0,"timeCost":0.78,"prodCost":0.0,"hrs":0.0},{"co":"THE WILLOW GROUP DBA STRUCTURE HOME","type":"BDR","gp":-159.0,"rev":180.0,"timeCost":0.0,"prodCost":339.0,"hrs":0.0},{"co":"THE WILLOW GROUP DBA STRUCTURE HOME","type":"License & Subscription","gp":352.67,"rev":1271.29,"timeCost":0.0,"prodCost":918.62,"hrs":0.0},{"co":"THE WILLOW GROUP DBA STRUCTURE HOME","type":"Managed Services","gp":1509.96,"rev":1572.32,"timeCost":62.36,"prodCost":0.0,"hrs":4.25},{"co":"THE WILLOW GROUP DBA STRUCTURE HOME","type":"Remote Support","gp":-215.89,"rev":0.0,"timeCost":215.89,"prodCost":0.0,"hrs":9.75},{"co":"Tur-Bo Jet Products Inc.","type":"BDR","gp":-13.98,"rev":0.0,"timeCost":13.98,"prodCost":0.0,"hrs":0.5},{"co":"Tur-Bo Jet Products Inc.","type":"Managed Services","gp":758.24,"rev":2424.24,"timeCost":0.0,"prodCost":1666.0,"hrs":0.0},{"co":"Verdugo Hills Medical Group","type":"License & Subscription","gp":-704.57,"rev":271.29,"timeCost":0.0,"prodCost":975.86,"hrs":0.0},{"co":"Verdugo Hills Medical Group","type":"Managed Services","gp":1154.5,"rev":1154.5,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Verdugo Hills Medical Group","type":"Remote Support","gp":800.0,"rev":800.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Wavemaker 360","type":"License & Subscription","gp":141.55,"rev":263.75,"timeCost":0.0,"prodCost":122.2,"hrs":0.0},{"co":"Wavemaker 360","type":"License & Subscription","gp":54.49,"rev":340.2,"timeCost":0.0,"prodCost":285.71,"hrs":0.0},{"co":"Wavemaker 360","type":"Managed Services","gp":1318.0,"rev":1318.0,"timeCost":0.0,"prodCost":0.0,"hrs":0.0},{"co":"Wavemaker 360","type":"Remote Support","gp":444.64,"rev":490.0,"timeCost":45.36,"prodCost":0.0,"hrs":2.25},{"co":"Zankou Enterprises, Inc.","type":"License & Subscription","gp":1087.85,"rev":2622.5,"timeCost":0.0,"prodCost":1534.65,"hrs":0.0},{"co":"Zankou Enterprises, Inc.","type":"Managed Services","gp":167.03,"rev":390.0,"timeCost":222.97,"prodCost":0.0,"hrs":8.5}]
+};
+const MONTH_LABELS = {jan:'January 2026',feb:'February 2026',mar:'March 2026'};
+
+const CANONICAL_MAP = {"anacapa heating & air inc.": "Anacapa Heating & Air", "edgar rice burroughs, inc.": "Edgar Rice Burroughs", "essex electronics, inc.": "Essex Electronics", "fishman geller & stepanian, llp": "Fishman Geller & Stepanian", "fz tax services": "FZ Tax Services", "gaytan & pineda insurance llc dba/ fiesta insuranc": "Gaytan & Pineda Insurance", "global care medical group": "Global Care Medical Group", "grobstein teeple, llp": "Grobstein Teeple", "harbortown point inc.": "Harbortown Point", "healthbegins": "HealthBegins", "housing corporation of america": "Housing Corp of America", "housing corp of america": "Housing Corp of America", "impact sciences inc. - los angeles": "Impact Sciences", "linger, peterson & shrum": "Linger Peterson & Shrum", "linger peterson & shrum": "Linger Peterson & Shrum", "omni agent solutions": "OMNI Agent Solutions", "ra centers - primero mgmt., inc.": "RA Centers - Primero Mgmt.", "s&j supply co., inc.": "S&J Supply Co.", "s&j supply co.": "S&J Supply Co.", "schifrin, gagnon & dickey": "Schifrin Gagnon & Dickey", "schifrin gagnon & dickey": "Schifrin Gagnon & Dickey", "spondylitis association of america": "Spondylitis Assoc of America", "spondylitis assoc of america": "Spondylitis Assoc of America", "standard aero parts, inc.": "Standard Aero Parts", "the leichter firm, a professional corporation": "The Leichter Firm", "the willow group dba structure home": "The Willow Group", "tur-bo jet products inc.": "Tur-Bo Jet Products", "tur-bo jet products": "Tur-Bo Jet Products", "verdugo hills medical group": "Verdugo Hills Medical", "zankou enterprises, inc.": "Zankou Enterprises", "alliance for wellness": "Alliance for Wellness", "law offices of sauda johnson": "Law Offices of Sauda Johnson", "american vision windows of arizona": "American Vision Windows of Arizona"};
+
+function normCo(s) {
+  const key = s.trim().toLowerCase();
+  if (CANONICAL_MAP[key]) return CANONICAL_MAP[key];
+  let r = s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+  r = r.replace(/\bLlp\b/g,'LLP').replace(/\bLlc\b/g,'LLC').replace(/\bDba\b/g,'DBA');
+  r = r.replace(/ Of /g,' of ').replace(/ And /g,' and ').replace(/^And /i,'And ');
+  r = r.replace(/\bFz\b/g,'FZ').replace(/\bOmni\b/g,'OMNI').replace(/\bRa\b/g,'RA');
+  return r;
+}
+// normCoCanon is an alias used in trending/service tabs
+const normCoCanon = normCo;
+
+function prepRows(arr) {
+  return arr.map(r => ({...r, co: normCo(r.co)}));
+}
+
+let raw = prepRows(DATA.feb);
+
+function switchMonth(m) {
+  raw = prepRows(DATA[m]);
+  Object.keys(expandState).forEach(k => delete expandState[k]);
+  buildAggregates();
+  renderMetrics();
+  renderClientTable();
+  renderTypeTable();
+  renderAttention();
+  renderNoLabor();
+  // re-render overview charts for the new month
+  setTimeout(renderOverviewCharts, 50);
+  document.querySelector('.header-sub').textContent = 'Agreement Gross Profit Analysis · Delivered for GoodSuite · ' + MONTH_LABELS[m];
+}
+
+function typeColor(t){
+  if(t==="Managed Services") return "#60a5fa";
+  if(t==="Remote Support") return "#4ade80";
+  if(t==="License & Subscription") return "#fb923c";
+  if(t==="BDR") return "#a78bfa";
+  return "#f472b6";
+}
+function fmt(n){return(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})}
+
+// Build aggregates
+let clients=[], types=[];
+function buildAggregates(){
+  const clientMap={};
+  raw.forEach(r=>{
+    if(!clientMap[r.co])clientMap[r.co]={co:r.co,gp:0,rev:0,hrs:0,timeCost:0,lines:[]};
+    clientMap[r.co].gp+=r.gp;
+    clientMap[r.co].rev+=r.rev;
+    clientMap[r.co].hrs+=r.hrs;
+    clientMap[r.co].timeCost+=r.timeCost;
+    if(r.gp!==0||r.rev!==0||r.timeCost!==0||r.prodCost!==0)clientMap[r.co].lines.push(r);
+  });
+  clients=Object.values(clientMap);
+  const typeMap={};
+  raw.forEach(r=>{
+    if(!typeMap[r.type])typeMap[r.type]={type:r.type,gp:0,rev:0,hrs:0,timeCost:0,count:new Set()};
+    typeMap[r.type].gp+=r.gp;
+    typeMap[r.type].rev+=r.rev;
+    typeMap[r.type].hrs+=r.hrs;
+    typeMap[r.type].timeCost+=r.timeCost;
+    typeMap[r.type].count.add(r.co);
+  });
+  types=Object.values(typeMap).map(t=>({...t,count:t.count.size}));
+}
+buildAggregates();
+
+function renderMetrics(){
+// Metrics
+const totalGP=clients.reduce((a,c)=>a+c.gp,0);
+const totalRev=clients.reduce((a,c)=>a+c.rev,0);
+const totalHrs=clients.reduce((a,c)=>a+c.hrs,0);
+const activeClients=clients.filter(c=>c.rev>0).length;
+document.getElementById('metrics-row').innerHTML=`
+  <div class="metric-card"><div class="metric-label">Total Gross Profit</div><div class="metric-value">${fmt(totalGP)}</div><div class="metric-sub">February 2026</div></div>
+  <div class="metric-card"><div class="metric-label">Blended GP Margin</div><div class="metric-value">${totalRev>0?(totalGP/totalRev*100).toFixed(1)+'%':'—'}</div><div class="metric-sub">on ${fmt(totalRev)} revenue</div></div>
+  <div class="metric-card"><div class="metric-label">Active Clients</div><div class="metric-value">${activeClients}</div><div class="metric-sub">with >$0 revenue</div></div>
+  <div class="metric-card"><div class="metric-label">Billable Hours</div><div class="metric-value">${totalHrs.toFixed(1)}</div><div class="metric-sub">logged this period</div></div>
+`;
+}
+renderMetrics();
+
+const expandState={};
+function renderClientTable(){
+  const sort=document.getElementById('client-sort').value;
+  const minGP=parseFloat(document.getElementById('client-min').value);
+  let data=clients.filter(c=>c.gp>=minGP);
+  if(sort==='gp-desc')data.sort((a,b)=>b.gp-a.gp);
+  else if(sort==='gp-asc')data.sort((a,b)=>a.gp-b.gp);
+  else if(sort==='margin-desc')data.sort((a,b)=>(b.rev>0?b.gp/b.rev:0)-(a.rev>0?a.gp/a.rev:0));
+  else data.sort((a,b)=>a.co.localeCompare(b.co));
+  const tbody=document.getElementById('client-tbody');
+  let html='';
+  data.forEach((c,i)=>{
+    const margin=c.rev>0?(c.gp/c.rev*100):0;
+    const gpCls=c.gp<0?'neg':'pos';
+    const mCls=margin<0?'neg':margin<20?'warn':'pos';
+    const isOpen=expandState[c.co];
+    const esc=c.co.replace(/'/g,"\\'");
+    html+=`<tr class="client-row" onclick="toggleRow('${esc}')">
+      <td class="name-cell"><span class="chevron${isOpen?' open':''}">▶</span>${c.co}</td>
+      <td class="num">${fmt(c.rev)}</td>
+      <td class="num ${c.timeCost>0?'warn':''}">${c.timeCost>0?fmt(c.timeCost):'—'}</td>
+      <td class="num ${gpCls}">${fmt(c.gp)}</td>
+      <td class="num ${mCls}">${c.rev>0?margin.toFixed(1)+'%':'—'}</td>
+      <td class="num">${c.hrs.toFixed(1)}</td>
+    </tr>`;
+    c.lines.forEach(l=>{
+      const lgp=l.gp<0?'neg':'';
+      const lm=l.rev>0?(l.gp/l.rev*100).toFixed(1)+'%':'—';
+      html+=`<tr class="detail-row${isOpen?' open':''}" data-parent="${c.co.replace(/"/g,'&quot;')}">
+        <td><span class="type-dot" style="background:${typeColor(l.type)}"></span>${l.type}</td>
+        <td class="num">${fmt(l.rev)}</td>
+        <td class="num ${l.timeCost>0?'warn':''}">${l.timeCost>0?fmt(l.timeCost):'—'}</td>
+        <td class="num ${lgp}">${fmt(l.gp)}</td>
+        <td class="num ${lgp}">${lm}</td>
+        <td class="num">${l.hrs.toFixed(1)}</td>
+      </tr>`;
+    });
+  });
+  tbody.innerHTML=html;
+}
+function toggleRow(co){
+  expandState[co]=!expandState[co];
+  document.querySelectorAll(`[data-parent="${co.replace(/"/g,'&quot;')}"]`).forEach(r=>r.classList.toggle('open',expandState[co]));
+  document.querySelectorAll('.client-row').forEach(row=>{
+    if(row.querySelector('td')&&row.querySelector('td').textContent.trim().startsWith(co.substring(0,10))){
+      const chev=row.querySelector('.chevron');
+      if(chev)chev.classList.toggle('open',expandState[co]);
+    }
+  });
+}
+renderClientTable();
+
+function renderTypeTable(){
+  const sorted=[...types].sort((a,b)=>b.gp-a.gp);
+  document.getElementById('type-tbody').innerHTML=sorted.map(t=>{
+    const m=t.rev>0?(t.gp/t.rev*100):0;
+    return `<tr>
+      <td><span class="type-dot" style="background:${typeColor(t.type)}"></span>${t.type}</td>
+      <td class="num">${fmt(t.rev)}</td>
+      <td class="num ${t.timeCost>0?'warn':''}">${t.timeCost>0?fmt(t.timeCost):'—'}</td>
+      <td class="num ${t.gp<0?'neg':'pos'}">${fmt(t.gp)}</td>
+      <td class="num">${t.rev>0?m.toFixed(1)+'%':'—'}</td>
+      <td class="num">${t.hrs.toFixed(1)}</td>
+      <td class="num">${t.count}</td>
+    </tr>`;
+  }).join('');
+
+  // Blended: L&S bucket vs Managed/Support/BDR bucket
+  const ls = {gp:0,rev:0,tc:0,hrs:0,cos:new Set()};
+  const svc = {gp:0,rev:0,tc:0,hrs:0,cos:new Set()};
+  raw.forEach(r => {
+    if (r.type === 'License & Subscription') {
+      ls.gp+=r.gp; ls.rev+=r.rev; ls.tc+=r.timeCost; ls.hrs+=r.hrs; ls.cos.add(r.co);
+    } else {
+      svc.gp+=r.gp; svc.rev+=r.rev; svc.tc+=r.timeCost; svc.hrs+=r.hrs; svc.cos.add(r.co);
+    }
+  });
+  const blendedRows = [
+    {label:'Managed / Support / BDR', color:'var(--ms-color)', ...svc, count:svc.cos.size},
+    {label:'License & Subscription',  color:'var(--ls-color)', ...ls,  count:ls.cos.size},
+  ];
+  const totGp = ls.gp+svc.gp, totRev = ls.rev+svc.rev, totTc = ls.tc+svc.tc, totHrs = ls.hrs+svc.hrs;
+  document.getElementById('type-blended-tbody').innerHTML = [
+    ...blendedRows.map(b => {
+      const m = b.rev>0?(b.gp/b.rev*100):0;
+      return `<tr>
+        <td><span class="type-dot" style="background:${b.color}"></span>${b.label}</td>
+        <td class="num">${fmt(b.rev)}</td>
+        <td class="num ${b.tc>0?'warn':''}">${b.tc>0?fmt(b.tc):'—'}</td>
+        <td class="num ${b.gp<0?'neg':'pos'}">${fmt(b.gp)}</td>
+        <td class="num">${b.rev>0?m.toFixed(1)+'%':'—'}</td>
+        <td class="num">${b.hrs.toFixed(1)}</td>
+        <td class="num">${b.count}</td>
+      </tr>`;
+    }),
+    `<tr style="border-top:1px solid rgba(192,132,252,0.25);font-weight:500">
+      <td style="color:var(--text-muted);font-size:12px;letter-spacing:.04em">Total</td>
+      <td class="num">${fmt(totRev)}</td>
+      <td class="num ${totTc>0?'warn':''}">${totTc>0?fmt(totTc):'—'}</td>
+      <td class="num ${totGp<0?'neg':'pos'}">${fmt(totGp)}</td>
+      <td class="num">${totRev>0?(totGp/totRev*100).toFixed(1)+'%':'—'}</td>
+      <td class="num">${totHrs.toFixed(1)}</td>
+      <td class="num"></td>
+    </tr>`,
+  ].join('');
+}
+renderTypeTable();
+
+function renderAttention(){
+  const negLines=raw.filter(r=>r.gp<0&&(r.rev>0||r.timeCost>0||r.prodCost>0)).sort((a,b)=>a.gp-b.gp);
+  document.getElementById('neg-tbody').innerHTML=negLines.map(r=>`<tr class="neg-highlight">
+    <td>${r.co}</td><td>${r.type}</td>
+    <td class="num neg">${fmt(r.gp)}</td>
+    <td class="num">${fmt(r.rev)}</td>
+    <td class="num">${fmt(r.timeCost)}</td>
+    <td class="num">${fmt(r.prodCost)}</td>
+  </tr>`).join('');
+  const badRS=raw.filter(r=>r.type==="Remote Support"&&r.timeCost>r.rev&&r.timeCost>100).sort((a,b)=>a.gp-b.gp);
+  document.getElementById('rs-tbody').innerHTML=badRS.map(r=>`<tr class="neg-highlight">
+    <td>${r.co}</td>
+    <td class="num">${fmt(r.rev)}</td>
+    <td class="num neg">${fmt(r.timeCost)}</td>
+    <td class="num neg">${fmt(r.gp)}</td>
+    <td class="num">${r.hrs.toFixed(1)}</td>
+  </tr>`).join('');
+}
+renderAttention();
+
+function renderNoLabor(){
+  // Clients where total billable + no-charge hours = 0 AND total hrs = 0
+  const noLaborClients=clients.filter(c=>c.hrs===0&&c.rev>0);
+  noLaborClients.sort((a,b)=>b.rev-a.rev);
+  document.getElementById('nolabor-tbody').innerHTML=noLaborClients.map(c=>{
+    const m=c.rev>0?(c.gp/c.rev*100):0;
+    const types=[...new Set(c.lines.map(l=>l.type))].join(', ');
+    return `<tr>
+      <td>${c.co}</td>
+      <td class="num">${fmt(c.rev)}</td>
+      <td class="num ${c.gp<0?'neg':'pos'}">${fmt(c.gp)}</td>
+      <td class="num ${m<0?'neg':m<20?'warn':'pos'}">${m.toFixed(1)}%</td>
+      <td style="font-size:11px;color:var(--text-muted)">${types}</td>
+    </tr>`;
+  }).join('');
+}
+renderNoLabor();
+
+// Charts
+let overviewCharts = {};
+function renderOverviewCharts() {
+  const extTypes = types.filter(t => t.type !== 'Internal/Other');
+  ['chart-type-gp','chart-type-margin','chart-top10','chart-bottom10'].forEach(id => {
+    if (overviewCharts[id]) { overviewCharts[id].destroy(); }
+  });
+  Chart.defaults.color = '#a89bc2';
+  Chart.defaults.borderColor = 'rgba(192,132,252,0.1)';
+  overviewCharts['chart-type-gp'] = new Chart(document.getElementById('chart-type-gp'), {
+    type:'bar',
+    data:{labels:extTypes.map(t=>t.type),datasets:[{data:extTypes.map(t=>Math.round(t.gp)),backgroundColor:extTypes.map(t=>typeColor(t.type)),borderRadius:5,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(192,132,252,0.08)'},ticks:{callback:v=>fmt(v),font:{size:11}}}}}
+  });
+  overviewCharts['chart-type-margin'] = new Chart(document.getElementById('chart-type-margin'), {
+    type:'bar',
+    data:{labels:extTypes.map(t=>t.type),datasets:[{data:extTypes.map(t=>t.rev>0?parseFloat((t.gp/t.rev*100).toFixed(1)):0),backgroundColor:extTypes.map(t=>typeColor(t.type)),borderRadius:5,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(1)+'%'}}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(192,132,252,0.08)'},ticks:{callback:v=>v+'%',font:{size:11}},min:0,max:100}}}
+  });
+  const sortedClients = [...clients].sort((a,b) => b.gp - a.gp);
+  const top10 = sortedClients.slice(0, 10);
+  overviewCharts['chart-top10'] = new Chart(document.getElementById('chart-top10'), {
+    type:'bar',
+    data:{labels:top10.map(c=>c.co),datasets:[{data:top10.map(c=>Math.round(c.gp)),backgroundColor:'#7c3aed',borderRadius:5,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},scales:{y:{grid:{display:false},ticks:{font:{size:12}}},x:{grid:{color:'rgba(192,132,252,0.08)'},ticks:{callback:v=>fmt(v),font:{size:11}}}}}
+  });
+  const bottom10 = sortedClients.slice(-10).reverse();
+  overviewCharts['chart-bottom10'] = new Chart(document.getElementById('chart-bottom10'), {
+    type:'bar',
+    data:{labels:bottom10.map(c=>c.co),datasets:[{data:bottom10.map(c=>Math.round(c.gp)),backgroundColor:bottom10.map(c=>c.gp<0?'#f87171':'#fb923c'),borderRadius:5,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},scales:{y:{grid:{display:false},ticks:{font:{size:12}}},x:{grid:{color:'rgba(192,132,252,0.08)'},ticks:{callback:v=>fmt(v),font:{size:11}}}}}
+  });
+}
+setTimeout(renderOverviewCharts, 200);
+
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const ids=['overview','clients','types','attention','nolabor','service','trending'];
+    t.classList.toggle('active',ids[i]===id);
+  });
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(id==='service') renderServiceTable();
+  if(id==='overview') setTimeout(renderOverviewCharts, 50);
+  if(id==='trending') {
+    renderTrending();
+    // rebuild charts on first open since canvas was hidden
+    setTimeout(renderTrending, 50);
+  }
+}
+
+
+// ============================================================
+// SERVICE AGREEMENTS TAB
+// ============================================================
+function renderServiceTable() {
+  const sort = document.getElementById('svc-sort').value;
+  const filter = document.getElementById('svc-filter').value;
+
+  // Aggregate by client: split L&S vs service
+  const map = {};
+  raw.forEach(r => {
+    if (!map[r.co]) map[r.co] = {co:r.co, ls_gp:0, ls_rev:0, ls_tc:0, svc_gp:0, svc_rev:0, svc_tc:0, svc_hrs:0, lines:[]};
+    const c = map[r.co];
+    if (r.type === 'License & Subscription') {
+      c.ls_gp += r.gp; c.ls_rev += r.rev; c.ls_tc += r.timeCost;
+    } else {
+      c.svc_gp += r.gp; c.svc_rev += r.rev; c.svc_tc += r.timeCost; c.svc_hrs += r.hrs;
+    }
+    if (r.gp!==0||r.rev!==0||r.timeCost!==0) c.lines.push(r);
+  });
+
+  let data = Object.values(map).filter(c => c.ls_rev > 0 || c.ls_gp !== 0 || c.svc_rev > 0 || c.svc_gp !== 0);
+
+  if (filter === 'ls-neg') data = data.filter(c => c.ls_gp < 0);
+  if (filter === 'svc-neg') data = data.filter(c => c.svc_gp < 0);
+
+  if (sort === 'svc-gp-desc') data.sort((a,b) => b.svc_gp - a.svc_gp);
+  else if (sort === 'svc-gp-asc') data.sort((a,b) => a.svc_gp - b.svc_gp);
+  else if (sort === 'svc-margin-desc') data.sort((a,b) => (b.svc_rev>0?b.svc_gp/b.svc_rev:0) - (a.svc_rev>0?a.svc_gp/a.svc_rev:0));
+  else if (sort === 'ls-gp-desc') data.sort((a,b) => b.ls_gp - a.ls_gp);
+  else data.sort((a,b) => a.co.localeCompare(b.co));
+
+  const svcExpandState = {};
+  let html = '';
+  data.forEach((c, i) => {
+    const svcMargin = c.svc_rev > 0 ? (c.svc_gp / c.svc_rev * 100) : 0;
+    const lsMargin = c.ls_rev > 0 ? (c.ls_gp / c.ls_rev * 100) : 0;
+    const lsGpCls = c.ls_gp < 0 ? 'neg' : c.ls_gp === 0 ? '' : 'pos';
+    const lsMCls = lsMargin < 0 ? 'neg' : lsMargin < 10 ? 'warn' : 'pos';
+    const svcGpCls = c.svc_gp < 0 ? 'neg' : 'pos';
+    const mCls = svcMargin < 0 ? 'neg' : svcMargin < 20 ? 'warn' : 'pos';
+    const esc = c.co.replace(/'/g, "\\'");
+
+    html += `<tr class="client-row" onclick="toggleSvcRow('${esc}', this)">
+      <td class="name-cell"><span class="chevron">▶</span>${c.co}</td>
+      <td class="num" style="border-left:1px solid rgba(192,132,252,0.12)">${c.svc_rev > 0 ? fmt(c.svc_rev) : '—'}</td>
+      <td class="num ${c.svc_tc > 0 ? 'warn' : ''}">${c.svc_tc > 0 ? fmt(c.svc_tc) : '—'}</td>
+      <td class="num ${svcGpCls}">${fmt(c.svc_gp)}</td>
+      <td class="num ${mCls}">${c.svc_rev > 0 ? svcMargin.toFixed(1) + '%' : '—'}</td>
+      <td class="num" style="border-left:1px solid rgba(192,132,252,0.12)">${c.ls_rev > 0 ? fmt(c.ls_rev) : '—'}</td>
+      <td class="num ${c.ls_tc > 0 ? 'warn' : ''}">${c.ls_tc > 0 ? fmt(c.ls_tc) : '—'}</td>
+      <td class="num ${lsGpCls}">${c.ls_gp !== 0 ? fmt(c.ls_gp) : '—'}</td>
+      <td class="num ${lsMCls}">${c.ls_rev > 0 ? lsMargin.toFixed(1) + '%' : '—'}</td>
+    </tr>`;
+
+    // Detail rows - one per agreement type
+    const typeAgg = {};
+    c.lines.forEach(l => {
+      if (!typeAgg[l.type]) typeAgg[l.type] = {gp:0,rev:0,tc:0,hrs:0};
+      typeAgg[l.type].gp += l.gp; typeAgg[l.type].rev += l.rev;
+      typeAgg[l.type].tc += l.timeCost; typeAgg[l.type].hrs += l.hrs;
+    });
+
+    Object.entries(typeAgg).sort((a,b) => b[1].gp - a[1].gp).forEach(([type, t]) => {
+      const isLS = type === 'License & Subscription';
+      const tMargin = t.rev > 0 ? (t.gp/t.rev*100).toFixed(1)+'%' : '—';
+      const tGpCls = t.gp < 0 ? 'neg' : t.gp > 0 ? 'pos' : '';
+      html += `<tr class="detail-row" data-svc-parent="${c.co.replace(/"/g,'&quot;')}">
+        <td><span class="type-dot" style="background:${typeColor(type)}"></span>${type}</td>
+        <td class="num" style="border-left:1px solid rgba(192,132,252,0.08)">${!isLS && t.rev > 0 ? fmt(t.rev) : (isLS ? '' : '—')}</td>
+        <td class="num ${!isLS && t.tc > 0 ? 'warn' : ''}">${!isLS && t.tc > 0 ? fmt(t.tc) : (isLS ? '' : '—')}</td>
+        <td class="num ${!isLS ? tGpCls : ''}">${!isLS ? fmt(t.gp) : ''}</td>
+        <td class="num ${!isLS ? tGpCls : ''}">${!isLS ? tMargin : ''}</td>
+        <td class="num" style="border-left:1px solid rgba(192,132,252,0.08)">${isLS && t.rev > 0 ? fmt(t.rev) : (isLS ? '—' : '')}</td>
+        <td class="num ${isLS && t.tc > 0 ? 'warn' : ''}">${isLS && t.tc > 0 ? fmt(t.tc) : (isLS ? '—' : '')}</td>
+        <td class="num ${isLS ? tGpCls : ''}">${isLS ? fmt(t.gp) : ''}</td>
+        <td class="num ${isLS ? tGpCls : ''}">${isLS ? tMargin : ''}</td>
+      </tr>`;
+    });
+  });
+  document.getElementById('service-tbody').innerHTML = html;
+}
+
+function toggleSvcRow(co, rowEl) {
+  const rows = document.querySelectorAll(`[data-svc-parent="${co.replace(/"/g,'&quot;')}"]`);
+  const chev = rowEl.querySelector('.chevron');
+  const isOpen = chev && chev.classList.contains('open');
+  rows.forEach(r => r.classList.toggle('open', !isOpen));
+  if (chev) chev.classList.toggle('open', !isOpen);
+}
+
+// ============================================================
+// TRENDING TAB
+// ============================================================
+const MONTHS = ['jan','feb','mar'];
+const MONTH_LABELS_SHORT = ['Jan 2026','Feb 2026','Mar 2026'];
+let trendCharts = {};
+
+function getAllCompanies() {
+  const cos = new Set();
+  MONTHS.forEach(m => DATA[m].forEach(r => cos.add(normCoCanon(r.co))));
+  return [...cos].sort();
+}
+
+function populateTrendDropdown() {
+  const sel = document.getElementById('trend-company');
+  getAllCompanies().forEach(co => {
+    const opt = document.createElement('option');
+    opt.value = co; opt.textContent = co;
+    sel.appendChild(opt);
+  });
+}
+populateTrendDropdown();
+
+function getTrendData(co) {
+  return MONTHS.map(m => {
+    const rows = DATA[m].map(r => ({...r, co: normCoCanon(r.co)})).filter(r => r.co === co);
+    const ls = {gp:0, rev:0, tc:0};
+    const svc = {gp:0, rev:0, tc:0, hrs:0};
+    rows.forEach(r => {
+      if (r.type === 'License & Subscription') {
+        ls.gp += r.gp; ls.rev += r.rev; ls.tc += r.timeCost;
+      } else {
+        svc.gp += r.gp; svc.rev += r.rev; svc.tc += r.timeCost; svc.hrs += r.hrs;
+      }
+    });
+    const total_gp = ls.gp + svc.gp;
+    const total_rev = ls.rev + svc.rev;
+    return {
+      ls_gp: ls.gp, ls_rev: ls.rev, ls_tc: ls.tc,
+      svc_gp: svc.gp, svc_rev: svc.rev, svc_tc: svc.tc, svc_hrs: svc.hrs,
+      total_gp, total_rev,
+      total_margin: total_rev > 0 ? total_gp/total_rev*100 : 0,
+      svc_margin: svc.rev > 0 ? svc.gp/svc.rev*100 : 0,
+      rows
+    };
+  });
+}
+
+function makeChart(id, labels, datasets, yFmt) {
+  if (trendCharts[id]) trendCharts[id].destroy();
+  trendCharts[id] = new Chart(document.getElementById(id), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: datasets.length > 1, labels: { color:'#a89bc2', boxWidth:10, font:{size:11} } },
+        tooltip: { callbacks: { label: c => yFmt(c.raw) } }
+      },
+      scales: {
+        x: { grid:{display:false}, ticks:{color:'#a89bc2',font:{size:11}} },
+        y: { grid:{color:'rgba(192,132,252,0.08)'}, ticks:{color:'#a89bc2',font:{size:11},callback:v=>yFmt(v)} }
+      }
+    }
+  });
+}
+
+function renderTrending() {
+  const co = document.getElementById('trend-company').value;
+  if (!co) return;
+  const data = getTrendData(co);
+
+  const ds = (label, vals, color, dash) => ({
+    label, data: vals.map(v => Math.round(v * 100)/100),
+    borderColor: color, backgroundColor: color+'33',
+    pointBackgroundColor: color, pointRadius: 5,
+    tension: 0.3, fill: false,
+    borderDash: dash || []
+  });
+
+  makeChart('trend-gp', MONTH_LABELS_SHORT, [
+    ds('Total GP', data.map(d=>d.total_gp), '#c084fc'),
+    ds('L&S GP', data.map(d=>d.ls_gp), '#fb923c', [4,3]),
+    ds('Service GP', data.map(d=>d.svc_gp), '#60a5fa', [4,3]),
+  ], v => fmt(v));
+
+  makeChart('trend-margin', MONTH_LABELS_SHORT, [
+    ds('Blended Margin', data.map(d=>d.total_margin), '#c084fc'),
+    ds('Service Margin', data.map(d=>d.svc_margin), '#60a5fa', [4,3]),
+  ], v => v.toFixed(1)+'%');
+
+  makeChart('trend-rev', MONTH_LABELS_SHORT, [
+    ds('Total Rev', data.map(d=>d.total_rev), '#4ade80'),
+    ds('L&S Rev', data.map(d=>d.ls_rev), '#fb923c', [4,3]),
+    ds('Service Rev', data.map(d=>d.svc_rev), '#60a5fa', [4,3]),
+  ], v => fmt(v));
+
+  makeChart('trend-tc', MONTH_LABELS_SHORT, [
+    ds('Labor Cost', data.map(d=>d.svc_tc), '#f87171'),
+  ], v => fmt(v));
+
+  makeChart('trend-hrs', MONTH_LABELS_SHORT, [
+    ds('Billable Hours', data.map(d=>d.svc_hrs), '#a78bfa'),
+  ], v => v.toFixed(1)+'h');
+
+  // Detail table
+  const detailHtml = `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:4px;">
+      <thead>
+        <tr>
+          <th style="text-align:left;padding:5px 8px;color:var(--text-dim);font-size:10px;letter-spacing:.08em;text-transform:uppercase;">Metric</th>
+          ${MONTH_LABELS_SHORT.map(l=>`<th style="text-align:right;padding:5px 8px;color:var(--text-dim);font-size:10px;letter-spacing:.08em;text-transform:uppercase;">${l}</th>`).join('')}
+          <th style="text-align:right;padding:5px 8px;color:var(--text-dim);font-size:10px;letter-spacing:.08em;text-transform:uppercase;">Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${[
+          ['Total GP', data.map(d=>fmt(d.total_gp)), data.map(d=>d.total_gp)],
+          ['L&S GP', data.map(d=>fmt(d.ls_gp)), data.map(d=>d.ls_gp)],
+          ['Service GP', data.map(d=>fmt(d.svc_gp)), data.map(d=>d.svc_gp)],
+          ['Service Margin', data.map(d=>d.svc_margin.toFixed(1)+'%'), data.map(d=>d.svc_margin)],
+          ['Labor Cost', data.map(d=>fmt(d.svc_tc)), data.map(d=>d.svc_tc)],
+          ['Billable Hrs', data.map(d=>d.svc_hrs.toFixed(1)), data.map(d=>d.svc_hrs)],
+        ].map(([label, vals, nums]) => {
+          const delta = nums[nums.length-1] - nums[0];
+          const arrow = delta > 0 ? '↑' : delta < 0 ? '↓' : '—';
+          // For cost and labor, up is bad; for everything else up is good
+          const isCost = label === 'Labor Cost';
+          const arrowCls = delta === 0 ? '' : ((delta > 0) !== isCost) ? 'pos' : 'neg';
+          return `<tr style="border-bottom:1px solid rgba(192,132,252,0.06)">
+            <td style="padding:6px 8px;color:var(--text-muted)">${label}</td>
+            ${vals.map(v=>`<td style="text-align:right;padding:6px 8px;color:var(--text)">${v}</td>`).join('')}
+            <td style="text-align:right;padding:6px 8px" class="${arrowCls}">${arrow} ${Math.abs(nums[nums.length-1]-nums[0]).toFixed(nums[0]%1===0?0:1)}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+  document.getElementById('trend-detail-table').innerHTML = detailHtml;
+}
+
+// Auto-render trending when tab is switched to
+const _origSwitchTab = switchTab;
+
+</script>
+</body>
+</html>
