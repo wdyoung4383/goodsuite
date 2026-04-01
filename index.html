@@ -796,8 +796,8 @@
         <label>Bill</label>
         <select id="audit-bill" onchange="renderAdditionsTable()">
           <option value="all">All</option>
-          <option value="true">Billed</option>
-          <option value="false">Not Billed</option>
+          <option value="true">Billable</option>
+          <option value="false">Non-Billable</option>
         </select>
         <label>Company</label>
         <select id="audit-company" onchange="renderAdditionsTable()">
@@ -1659,7 +1659,7 @@ function renderAdditionsTable(){
     return `<tr class="audit-row-${fKey}">
       <td style="font-size:12px">${r.co}</td>
       <td><span class="audit-flag-pill pill-${fKey}">${fLabel}</span></td>
-      <td><span class="audit-flag-pill" style="background:${r.bill?'rgba(74,222,128,0.15)':'rgba(248,113,113,0.15)'};color:${r.bill?'#4ade80':'#f87171'};border-color:${r.bill?'rgba(74,222,128,0.4)':'rgba(248,113,113,0.4)'}">${r.bill?'Billed':'Not Billed'}</span></td>
+      <td><span class="audit-flag-pill" style="background:${r.bill?'rgba(74,222,128,0.15)':'rgba(248,113,113,0.15)'};color:${r.bill?'#4ade80':'#f87171'};border-color:${r.bill?'rgba(74,222,128,0.4)':'rgba(248,113,113,0.4)'}">${r.bill?'Billable':'Non-Billable'}</span></td>
       <td style="font-size:12px">${r.desc}</td>
       <td style="font-size:11px;color:var(--text-muted)">${r.product_id.substring(0,30)}</td>
       <td class="num" style="font-size:12px">${fmtN(r.unit_price)}</td>
